@@ -1,0 +1,45 @@
+export(
+       rmvn.spa,
+       Sncf,
+       Sncf.srf,
+       spline.correlog,
+       correlog,
+       correlog.nc,
+       mSynch,
+       mantel.test,
+       partial.mantel.test,
+       lisa,
+       lisa.nc,
+       rmvn.spa,
+       gcdist,
+       Sncf2D,
+       cc.offset,
+       spline.correlog.2D,
+       cor2,
+       ff.filter,
+       plot.Sncf,
+       summary.Sncf,
+       plot.Sncf.cov,
+       plot.spline.correlog,
+       summary.spline.correlog,
+       plot.correlog,
+       print.mSynch,
+       plot.lisa,
+       plot.Sncf2D,
+       summary.Sncf2D,
+       plot.cc.offset
+       )
+
+S3method(plot,Sncf)
+S3method(summary,Sncf)
+S3method(plot,Sncf.cov)
+S3method(plot,spline.correlog)
+S3method(summary,spline.correlog)
+S3method(plot,correlog)
+S3method(print,mSynch)
+S3method(plot,lisa)
+S3method(plot,Sncf2D)
+S3method(summary,Sncf2D)
+S3method(plot,cc.offset)
+
+
