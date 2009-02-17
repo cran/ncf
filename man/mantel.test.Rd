@@ -3,12 +3,12 @@
 \title{Mantel Test}
 \description{
   A simple function to do a permutation-based Mantel test. The 
-  data can either be two distance/similarity matrices or {x, y, z} data.  
+  data can either be two distance/similarity matrices or (x, y, z) data.
 }
 
 \usage{
 mantel.test(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL,
-    resamp = 1000, latlon = FALSE)
+    resamp = 1000, latlon = FALSE, quiet = FALSE)
 }
 
 \arguments{
@@ -20,15 +20,17 @@ mantel.test(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL,
   \item{resamp}{the number of resamples for the null distribution. }
   \item{latlon}{if TRUE, coordinates are latitude and 
            longitude.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{
  Typical usages are
 \preformatted{
 mantel.test(M1, M2, x = NULL, y = NULL, z = NULL,
-resamp = 1000, latlon = FALSE)
+resamp = 1000, latlon = FALSE, quiet = FALSE)
 
-mantel.test(x, y, z, M1=NULL, M2=NULL, resamp = 1000, latlon = FALSE)
+mantel.test(x, y, z, M1=NULL, M2=NULL, resamp = 1000,
+latlon = FALSE, quiet = FALSE)
 }
 
 

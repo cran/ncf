@@ -8,7 +8,7 @@
 }
 
 \usage{
-    lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE)
+    lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = FALSE)
     }
 
 \arguments{
@@ -22,6 +22,7 @@
           longitude.}
   \item{na.rm}{if TRUE, NA's will be dealt with through 
            pairwise deletion of missing values.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{

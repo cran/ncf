@@ -8,7 +8,7 @@
 }
 
 \usage{
-    lisa(x, y, z, neigh, resamp, latlon)
+    lisa(x, y, z, neigh, resamp, latlon, quiet = FALSE)
     }
 
 \arguments{
@@ -19,6 +19,7 @@
   \item{resamp}{number of resamples under the NULL to generate p-values}
   \item{latlon}{Not yet implemented: if TRUE, coordinates are latitude and
           longitude.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{

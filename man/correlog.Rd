@@ -9,7 +9,7 @@
 
 \usage{
 correlog(x, y, z, w = NULL, increment, resamp = 1000, 
-latlon = FALSE, na.rm = FALSE)
+latlon = FALSE, na.rm = FALSE, quiet = FALSE)
 }
 
 \arguments{
@@ -27,6 +27,7 @@ latlon = FALSE, na.rm = FALSE)
           longitude.}
   \item{na.rm}{if TRUE, NA's will be dealt with through 
            pairwise deletion of missing values.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{

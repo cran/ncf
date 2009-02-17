@@ -8,7 +8,7 @@
 }
 
 \usage{
-    mSynch(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE)
+    mSynch(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE, quiet = FALSE)
 }
 \arguments{
   \item{x}{matrix of dimension n x p representing p 
@@ -27,6 +27,7 @@
            observations.}
   \item{circ}{if TRUE, the observations are assumed to be 
            angular (in radians), and circular correlation is used.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{

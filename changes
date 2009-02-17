@@ -1,3 +1,11 @@
+1.1-2: Sncf tweaked so that the cross-covariance function will use the
+       predicted y-intercept if z and w are sampled at different locations.
+       Otherwise the mean of the diagonal of the cross-correlation matrix
+       is used (as before).
+       
+       quiet argument added to all functions to surpress bootstrap counter
+       (if desired)
+
 1.1-1: R-2.6 compliant, cran compliant
 
 1.1-0: Added lisa, added fixed bug in correlog

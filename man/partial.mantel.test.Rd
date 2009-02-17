@@ -8,7 +8,7 @@
 }
 
 \usage{
-partial.mantel.test(M1, M2, M3, resamp = 1000, method = "pearson")
+partial.mantel.test(M1, M2, M3, resamp = 1000, method = "pearson", quiet = FALSE)
 }
 
 \arguments{
@@ -16,6 +16,7 @@ partial.mantel.test(M1, M2, M3, resamp = 1000, method = "pearson")
   \item{resamp}{the number of resamples for the 
     null distribution. }
   \item{method}{The method to be used for calculating the correlations.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 

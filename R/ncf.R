@@ -1,9 +1,9 @@
 ##############################################################################################
-Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE, 
-	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE){
+Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE,
+	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE, quiet=FALSE){
 ##############################################################################################
 #Sncf is the function to estimate the nonparametric covariance (or cross-covariance) function
-#(using a smoothing spline as an equivalent kernel) as discussed in 
+#(using a smoothing spline as an equivalent kernel) as discussed in
 #Bjornstad et al. (1999; Trends in Ecology and Evolution 14:427-431)
 #
 #The function requires multiple observations at each location (use spline.correlog
@@ -14,11 +14,11 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 #x         vector of length n representing the x coordinates (or longitude; see latlon)
 #y         vector of length n representing the y coordinates (or latitude; see latlon)
 #z         matrix of dimension n x p representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate 
+#w         an optional second matrix of dimension n x p for species 2 (to estimate
 #	      the spatial cross-correlation function)
 #
 #df        degrees of freedom for the spline. The default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a 
+#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a
 #             null distribution for the estimator under randomization
 #resamp    is the number of resamples for the bootstrap or the null distribution
 #npoints   is the number of points at which to save the value for the spline function (and
@@ -27,22 +27,22 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 #             dimensional matrix)
 #filter    if True, the Fourier filter method of Hall and coworkers (Probability Theory and
 #             Related Fields, 1994, 99:399-424; Annals of Statistics, 1994, 22:	2115-2134) is
-#             applied to ensure positive semidefiniteness of the estimator. 
-#             Be warned: more work may be needed on this. 
+#             applied to ensure positive semidefiniteness of the estimator.
+#             Be warned: more work may be needed on this.
 #fw         if filter is True, it may be useful to truncate the function at some distance
 #             w sets the truncation distance. when set to zero no truncation is done.
 #xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
 #	      than xmax is omitted
 #na.rm     if TRUE, missing values is accomodated through a pairwise deletion.
 #latlon	   if TRUE, coordinates are in latitude and longitude
-#circ      if TRUE, the data are assumed circular, and an angular version of 
+#circ      if TRUE, the data are assumed circular, and an angular version of
 #		the Pearson's product moment correlation is used
 #
 #VALUE
 #an object of class Sncf is returned consisted of the following components:
 #real      $predicted$x is the x coordinates for the fitted covariance function
 #          $predcited$y is the y values for the covariance function
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is 
+#          $x.intercept is the lowest value at which the function is = 0. If correlation is
 #	       initially negative, the distance calculated is negative
 #	   $e.intercept is the lowest value at which the function is <= 1/e
 #          $y.intercept is the extrapolated value at x=0
@@ -56,8 +56,8 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 ############################################################################################
 
 #the following sets up the output:
-	real <- list(cbar = NA, x.intercept = NA, e.intercept = NA, y.intercept = NA, cbar.intercept = NA, 
-		predicted = list(x = matrix(NA, nrow = 1, ncol = npoints), 
+	real <- list(cbar = NA, x.intercept = NA, e.intercept = NA, y.intercept = NA, cbar.intercept = NA,
+		predicted = list(x = matrix(NA, nrow = 1, ncol = npoints),
 		y = matrix(NA, nrow = 1, ncol = npoints)))
 
 	NAO <- FALSE
@@ -75,7 +75,7 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 
 	if(is.null(w)){
 	#This generates the moran distances
-		#the odd adding of zero is just to ensure that all vectors 
+		#the odd adding of zero is just to ensure that all vectors
 		#are treated as numeric
 		n <- dim(z)[1]
 		p <- dim(z)[2]
@@ -86,7 +86,7 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 
 	else {
 	#This generates the moran distances for cross-correlation
-		#the odd adding of zero is just to ensure that all vectors 
+		#the odd adding of zero is just to ensure that all vectors
 		#are treated as numeric
 		n <- dim(z)[1]
 		p <- dim(z)[2]
@@ -100,7 +100,7 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	if(is.null(df)){
 		df <- sqrt(n)
 	}
-	
+
 
 	#then generating geographic distances
 	if(latlon){
@@ -152,9 +152,14 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	if(is.null(w)){
 		real$y.intercept <- lx$y[1]
 	}
-	
+
 	else {
+    if(is.finite(mean(diag(moran), na.rm= TRUE))){
 		real$y.intercept <- mean(diag(moran), na.rm= TRUE)
+		}
+		else {
+    real$y.intercept <- lx$y[1]
+    }
 	}
 
 	real$predicted <- list(x = xpoints, y = lx$y)
@@ -269,13 +274,13 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 		boot$boot.summary$cbar <- matrix(NA, nrow = resamp, ncol = 1)
 		predicted <- list(x = matrix(NA, nrow = 1, ncol = npoints), y = matrix(NA, nrow = resamp, ncol = npoints))
 		predicted$x[1,] <- xpoints
-		type <- charmatch(type, c("boot", "perm"), 
+		type <- charmatch(type, c("boot", "perm"),
 			nomatch = NA)
 		if(is.na(type))
 			stop("method should be \"boot\", or \"perm\"")
 
 		for(i in 1:resamp) {
-			cat(i, " of ", resamp, "\n")
+		if(! quiet)	{cat(i, " of ", resamp, "\n")}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -326,8 +331,13 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 		}
 
 		else {
+      if(is.finite(mean(diag(moran[trekky, trekky]), na.rm= TRUE))){
 			boot$boot.summary$y.intercept[i,1] <- mean(diag(moran[trekky, trekky]), na.rm= TRUE)
-		}
+   		}
+		  else {
+		  	boot$boot.summary$y.intercept[i,1] <- lx$y[1]
+      }
+	  }
 
 		predicted$y[i,] <- lx$y
 
@@ -395,9 +405,9 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 				break
 			pos <- neg
 		}
-	
+
 	boot$boot.summary$e.intercept[i,1] <- pos
-	
+
 	#Now find the cbar-folding scale
 
 		sobj <- smooth.spline(u, v - real$cbar, df = df)
@@ -407,7 +417,7 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 			if(fw > 0){ lx$y[xpoints > fw] <- 0}
 			lx$y <- ff.filter(lx$y)
 		}
-	
+
 		ly <- 1:length(lx$y)
 		choise <- ly[lx$y < 0][1]
 		pos <- lx$x[choise - 1]
@@ -442,7 +452,7 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 		boot$boot <- NULL
 		}
 
-	ty <- apply(predicted$y, 2, quantile, probs = c(0, 0.025, 0.05, 0.1, 0.25, 0.5, 
+	ty <- apply(predicted$y, 2, quantile, probs = c(0, 0.025, 0.05, 0.1, 0.25, 0.5,
 			0.75, 0.9, 0.95, 0.975, 1), na.rm = TRUE)
 		dimnames(ty) <- list(c(0, 0.025, 0.05, 0.1, 0.25, 0.5, 0.75, 0.9, 0.95, 0.975, 1), NULL)
 		tx <- predicted$x
@@ -460,7 +470,6 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	class(res) <- "Sncf"
 	res
 }
-
 
 ##############################################################################################
 plot.Sncf <- function(x, xmax = 0, text = TRUE, add = FALSE, ...){
@@ -534,7 +543,7 @@ summary.Sncf<-function(object, ...){
 
 ##############################################################################################
 Sncf.srf <- function(x, y, z, w=NULL, avg=NULL, avg2=NULL, corr= TRUE, df = NULL, type = "boot", resamp = 0, 
-	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE){
+	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE, quiet = FALSE){
 ##############################################################################################
 #Sncf.srf is the function to estimate the nonparametric covariance function for a 
 #stationary random field (expectation and variance identical). The function uses a
@@ -796,7 +805,7 @@ if(resamp != 0) {
 	if(is.na(type))
 		stop("method should be \"boot\", or \"perm\"")
 	for(i in 1:resamp) {
-		cat(i, " of ", resamp, "\n")
+		if(! quiet)	{cat(i, " of ", resamp, "\n")}
 	if(type == 1) {
 		trekkx <- sample(1:n, replace = TRUE)
 		trekky <- trekkx
@@ -1012,7 +1021,7 @@ plot.Sncf.cov <- function(x, xmax = 0, text = TRUE, ...){
 
 ##############################################################################################
 spline.correlog<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE, 
-	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE){
+	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE, quiet = FALSE){
 ##############################################################################################
 #spline.correlog is the function to estimate the spline correlogram discussed in 
 #Bjornstad & Falck (2001, Evironmental and Ecological Statistics 8:53-70)
@@ -1253,7 +1262,7 @@ if(resamp != 0) {
 	if(is.na(type))
 		stop("method should be \"boot\", or \"perm\"")
 	for(i in 1:resamp) {
-		cat(i, " of ", resamp, "\n")
+		if(! quiet)	{cat(i, " of ", resamp, "\n")}
 	if(type == 1) {
 		trekkx <- sample(1:n, replace = TRUE)
 		trekky <- trekkx
@@ -1434,7 +1443,7 @@ summary.spline.correlog<-function(object, ...){
 
 
 ##############################################################################################
-correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE){
+correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE, quiet = FALSE){
 ##############################################################################################
 #correlog estimates the spatial correlogram (if z is univariate)
 #or the Mantel correlogram (if z is multivariate), or the (uni-/multivariate)
@@ -1567,9 +1576,12 @@ NAO <- FALSE
   p<-NULL
 
 	if(resamp != 0){
+
 		perm <- matrix(NA, ncol = length(moran), nrow = resamp)
 
 		for(i in 1:resamp){
+    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+
 			trekk <-sample(1:n)
 			dma <- dmat2[trekk,trekk]
 			mor <- moran2
@@ -1583,7 +1595,6 @@ NAO <- FALSE
 
 			dkl <- ceiling(dma/increment)	#generates the distance matrices
 			perm[i,] <- sapply(split(mor, dkl), mean, na.rm = TRUE)
-			cat(i, " of ", resamp, "\n")
 		}
 
   p=(apply(moran<=t(perm),1,sum))/(resamp+1)
@@ -1615,7 +1626,7 @@ plot.correlog<-function(x, ...){
 	title("Correlogram")
 }
 ##############################################################################################
-correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE){
+correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet = FALSE){
 ##############################################################################################
 #correlog.nc estimates the noncentred correlogram
 #and cross-correlogram. Bjornstad et al. (1999; Trends in Ecology and
@@ -1738,6 +1749,9 @@ if(is.null(w)){
 		perm <- matrix(NA, ncol = length(moran), nrow = resamp)
 
 		for(i in 1:resamp){
+    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+
+
 			trekk <-sample(1:n)
 			dma <- dmat2[trekk,trekk]
 			mor <- moran2
@@ -1751,7 +1765,6 @@ if(is.null(w)){
 
 			dkl <- ceiling(dma/increment)	#generates the distance matrices
 			perm[i,] <- sapply(split(mor, dkl), mean, na.rm = TRUE)
-			cat(i, " of ", resamp, "\n")
 		}
 
   p=(apply(moran<=t(perm),1,sum))/(resamp+1)
@@ -1768,7 +1781,7 @@ if(is.null(w)){
 }
 
 ##############################################################################################
-mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE){
+mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE, quiet = FALSE){
 ##############################################################################################
 #mSynch is a function to estimate the mean (cross-)correlation with bootstrapp CI for one
 #or two panels of spatiotemporal data
@@ -1845,7 +1858,7 @@ Sbar$boot <- NULL
 if(resamp != 0) {
 	Sbar$boot<-matrix(NA, nrow = resamp, ncol = 1)
 	for(i in 1:resamp) {
-		cat(i, " of ", resamp, "\n")
+ 	if(! quiet)	{cat(i, " of ", resamp, "\n")}
 
 	#here is the bootstrapping/randomization
 	trekkx <- sample(1:n, replace = TRUE)
@@ -1891,7 +1904,7 @@ if(resamp != 0) {
 
 
 ##############################################################################################
-mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE){
+mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE, quiet = FALSE){
 ##############################################################################################
 #mantel.test is a function to calculate the mantel test for two matrices,
 #or for {x, y, z} data.
@@ -1975,6 +1988,7 @@ else{	#if x is null
 		perm <- rep(NA, resamp)		
 
 		for(i in 1:resamp){
+    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
 			trekk <-sample(1:n)
 			d <- M12[trekk,trekk]
 			m <- M2
@@ -1982,8 +1996,6 @@ else{	#if x is null
 			d <- d[row(d)!=col(d)]
 
 			perm[i]<-cor2(d, M2, circ=FALSE)
-		
-			cat(i, " of ", resamp, "\n")
 		}
     p=(sum(MantelR>=perm))/(resamp+1)
     p=min(c(p, 1-p)) + 1/(resamp+1)
@@ -2000,7 +2012,7 @@ else{	#if x is null
 }
 
 ##############################################################################################
-partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson'){
+partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson', quiet = FALSE){
 ##############################################################################################
 #partial.mantel.tets is a simple function to calculate Mantel and partial mantel tests for three matrices,
 #the partial mantel test is calculated to test for relationships between M1 and M2 (or M3) cotrolling for M3 (M2).
@@ -2049,6 +2061,8 @@ perm<-matrix(NA, ncol=5, nrow=resamp)
 
 for(i in 1:resamp){
 
+  if(! quiet)	{cat(i, " of ", resamp, "\n")}
+
 	trekk <-sample(1:n)
 	M1r <- M1[trekk,trekk]
 	r12r<-cor(M1r[upper.tri(M1)], M2[upper.tri(M2)], use="pairwise.complete.obs", method=method)
@@ -2064,7 +2078,6 @@ for(i in 1:resamp){
 	r23r<-cor(M2r[upper.tri(M1)], M3[upper.tri(M2)], use="pairwise.complete.obs", method=method)
 	perm[i,3]<-r23r
 		
-	cat(i, " of ", resamp, "\n")
 }
 
 res<-c(r12, r13, r23, r12.3, r13.2)
@@ -2081,7 +2094,7 @@ return(out)
 }
 
 ##############################################################################################
-lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE){
+lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
 ##############################################################################################
 #lisa is a function to estimate the local indicators
 #of spatial association.
@@ -2148,10 +2161,12 @@ if(latlon){
      perm<-matrix(NA, nrow=resamp, ncol=n)
 
     for(i in 1:resamp){
+
+    if(! quiet)	{cat(i, " of ", resamp, "\n")}
+
     trekk<-sample(1:n)
     zx2<-zx[trekk, trekk]
 	  perm[i,]<-apply(zx2*dkl, 2, mean, na.rm= TRUE)
-	  cat(i, " of ", resamp, "\n")
     }
     p<-(apply(moran<t(perm),1,sum))/(resamp+1)
     p<-apply(cbind(p, 1-p), 1, min) + 1/(resamp+1)
@@ -2166,7 +2181,7 @@ if(latlon){
 
 
 ##############################################################################################
-lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE){
+lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = FALSE){
 ##############################################################################################
 #lisa.nc is a function to estimate the (noncentred) local indicators
 #of spatial association. The function requires mulitple observations at each location.
@@ -2239,10 +2254,11 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE){
      perm<-matrix(NA, nrow=resamp, ncol=n)
 
     for(i in 1:resamp){
+    if(! quiet)	{cat(i, " of ", resamp, "\n")}
+
     trekk<-sample(1:n)
     zx2<-zx[trekk, trekk]
 	  perm[i,]<-apply(zx2*dkl, 2, mean, na.rm= TRUE)
-	  cat(i, " of ", resamp, "\n")
     }
     p<-(apply(moran<t(perm),1,sum))/(resamp+1)
     p<-apply(cbind(p, 1-p), 1, min) + 1/(resamp+1)
@@ -2361,7 +2377,7 @@ gcdist <- function(x1, y1, x2, y2) {
 
 ##############################################################################################
 Sncf2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, 
+  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, quiet = FALSE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #Sncf2D is the function to estimate the anisotropic nonparametric covariance function 
@@ -2640,7 +2656,8 @@ for(d in 1:length(ang)){
 		boot[[d]]$predicted$x[1,] <- xpoints
 
 		for(i in 1:resamp) {
-			cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")
+
+		if(! quiet)	{cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -2985,7 +3002,7 @@ plot.cc.offset <- function(x, xmax = 0, ...){
 
 ##############################################################################################
 spline.correlog.2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, 
+  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, quiet = FALSE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #spline.correlog.2D is the function to estimate the anisotropic nonparametric covariance function
@@ -3254,7 +3271,7 @@ for(d in 1:length(ang)){
 		boot[[d]]$predicted$x[1,] <- xpoints
 
 		for(i in 1:resamp) {
-			cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")
+		if(! quiet)	{cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -3452,18 +3469,18 @@ cor2<-function(x, y = NULL, circ=FALSE){
     use <- "pairwise.complete.obs"
     na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs"))
     method <- "pearson"
-    if (is.data.frame(x)) 
+    if (is.data.frame(x))
         x <- as.matrix(x)
-    if (is.data.frame(y)) 
+    if (is.data.frame(y))
         y <- as.matrix(y)
-    if (!is.matrix(x) && is.null(y)) 
+    if (!is.matrix(x) && is.null(y))
         stop("supply both x and y or a matrix-like x")
     if (method != "pearson") {
-        Rank <- function(u) if (is.matrix(u)) 
+        Rank <- function(u) if (is.matrix(u))
             apply(u, 2, rank)
         else rank(u)
         x <- Rank(x)
-        if (!is.null(y)) 
+        if (!is.null(y))
             y <- Rank(y)
     }
     if(!circ){

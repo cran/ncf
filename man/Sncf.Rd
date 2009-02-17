@@ -10,7 +10,7 @@
 \usage{
 Sncf(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000, 
 npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it = 25, 
-xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE)
+xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE, quiet = FALSE)
 }
 
 \arguments{
@@ -52,6 +52,7 @@ xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE)
            longitude.}
   \item{circ}{if TRUE, the observations are assumed to be 
            angular (in radians), and circular correlation is used.}
+  \item{quiet}{if TRUE the counter is supressed during execution.}
 }
 
 \details{

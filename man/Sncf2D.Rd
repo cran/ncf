@@ -11,7 +11,7 @@
 \usage{
 Sncf2D(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000, 
 npoints = 300, save = FALSE, max.it = 25, xmax = FALSE, na.rm = FALSE,
-jitter = FALSE, angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
+jitter = FALSE, quiet = FALSE, angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
 }
 
 \arguments{
@@ -43,7 +43,8 @@ jitter = FALSE, angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
            observations.}
   \item{jitter}{if TRUE, jitters the distance matrix, to avoid problems associated
     with fitting the function to data on regular grids}
-  \item{angle}{specifies number of cardinal directions and angles for which to 
+  \item{quiet}{if TRUE the counter is supressed during execution.}
+  \item{angle}{specifies number of cardinal directions and angles for which to
   calculate correlation functions. Default are 8 directions between 0 and 180.}
 }
 
@@ -57,8 +58,8 @@ jitter = FALSE, angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
   Missing values are allowed - values are assumed missing at random.
 
   I have implemented an optional argument:
-  \item{jitter}{if TRUE this jitters distance matrix, to avoid some problems I've had 
-    with spline-smoothing data from regular grid-data.}
+  \code{jitter} if TRUE this jitters the distance matrix, to avoid some problems I've had
+    with spline-smoothing data from regular grid-data.
 }
 
 \value{
