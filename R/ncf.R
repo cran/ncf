@@ -2050,7 +2050,7 @@ n<-dim(M1)[1]
 
 r12<-cor(M1[upper.tri(M1)], M2[upper.tri(M2)], use="pairwise.complete.obs", method=method)
 r13<-cor(M1[upper.tri(M1)], M3[upper.tri(M3)], use="pairwise.complete.obs", method=method)
-r23<-cor(M1[upper.tri(M2)], M2[upper.tri(M3)], use="pairwise.complete.obs", method=method)
+r23<-cor(M2[upper.tri(M2)], M3[upper.tri(M3)], use="pairwise.complete.obs", method=method)
 
 r12.3<-(r12-r13*r23)/(sqrt(1-r13^2)*sqrt(1-r23^2))
 r13.2<-(r13-r12*r23)/(sqrt(1-r12^2)*sqrt(1-r23^2))
@@ -2075,7 +2075,7 @@ for(i in 1:resamp){
 	perm[i,5]<-(r13r-r12r*r23)/(sqrt(1-r12r^2)*sqrt(1-r23^2))
 	
 	M2r <- M2[trekk,trekk]
-	r23r<-cor(M2r[upper.tri(M1)], M3[upper.tri(M2)], use="pairwise.complete.obs", method=method)
+	r23r<-cor(M2r[upper.tri(M2)], M3[upper.tri(M3)], use="pairwise.complete.obs", method=method)
 	perm[i,3]<-r23r
 		
 }
