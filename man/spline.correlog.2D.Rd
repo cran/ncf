@@ -66,10 +66,20 @@ angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
 The function to estimate the UNIvariate anisotropic nonparametric 
 (cross-)correlation function in arbitrary directions. In particular 
 it was developed to calculate the univariate lagged cross-correlation 
-function used in (Humston et al. 2005).
+function used in (Humston et al. 2005). Note that this 2D spline correlogram 
+does the anisotopic analysis NOT by doing the angle-with-tolerance-wedge-style 
+of Oden and Sokal (1986) but by projecting
+the the spatial coordinates of all locations on a sequence of 
+cardinal angles (a la Sncf2D). Hence, all data points are used every time, 
+it is only their relative distances that are changed. 
+For example {0,0} and {0, 10} are distance zero in the zero-degree 
+direction but at distance 10 in the 90-degree direction.
 }
 
 \references{
+    Oden, N.L. and Sokal, R.R. 1986. Directional autocorrelation: an extension 
+    of spatial correlograms to two dimensions. Systematic Zoology 35: 608-617.
+
     Humston, R., Mortensen, D. and Bjornstad, O.N. 2005. Anthropogenic
     forcing on the spatial dynamics of an agricultural weed:
     the case of the common sunflower. Journal of Applied Ecology 42: 863-872.

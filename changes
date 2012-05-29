@@ -1,3 +1,6 @@
+1.1-4: The auxcilliary function cor2() was changed to make Brian Ripley 
+       happy ;-)
+
 1.1-3: error in partial.mantel.test corrected
 
 1.1-2: Sncf tweaked so that the cross-covariance function will use the

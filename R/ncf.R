@@ -3466,25 +3466,14 @@ cor2<-function(x, y = NULL, circ=FALSE){
 		return(r)
 	}
 
-    use <- "pairwise.complete.obs"
-    na.method <- pmatch(use, c("all.obs", "complete.obs", "pairwise.complete.obs"))
-    method <- "pearson"
     if (is.data.frame(x))
         x <- as.matrix(x)
     if (is.data.frame(y))
         y <- as.matrix(y)
     if (!is.matrix(x) && is.null(y))
         stop("supply both x and y or a matrix-like x")
-    if (method != "pearson") {
-        Rank <- function(u) if (is.matrix(u))
-            apply(u, 2, rank)
-        else rank(u)
-        x <- Rank(x)
-        if (!is.null(y))
-            y <- Rank(y)
-    }
     if(!circ){
-	    cor<-.Internal(cor(x, y, na.method, method == "kendall"))
+	    cor<-cor(x=x, y=y, use="pairwise.complete.obs", method = "pearson")
     }
 
     if(circ){

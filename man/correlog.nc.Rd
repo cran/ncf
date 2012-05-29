@@ -9,7 +9,8 @@
 }
 
 \usage{
-    correlog.nc(x, y, z, w = NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet = FALSE)
+    correlog.nc(x, y, z, w = NULL, increment, resamp = 1000, 
+    na.rm = FALSE, latlon=FALSE, quiet = FALSE)
     }
 
 \arguments{
@@ -89,7 +90,7 @@ in ecological studies. Ecography, 21, 423-429.
         )
 
 #noncentered (Mantel) correlogram 
-    fit1 <- correlog.nc(x=x, y=y, z=z, increment=2)
+    fit1 <- correlog.nc(x=x, y=y, z=z, increment=2, resamp=5)
     \dontrun{plot.correlog(fit1)}
 }
 

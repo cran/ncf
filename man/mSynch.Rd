@@ -8,7 +8,8 @@
 }
 
 \usage{
-    mSynch(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE, quiet = FALSE)
+    mSynch(x, y = NULL, resamp = 1000, na.rm = FALSE, 
+    circ = FALSE, quiet = FALSE)
 }
 \arguments{
   \item{x}{matrix of dimension n x p representing p 

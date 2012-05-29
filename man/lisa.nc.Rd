@@ -8,7 +8,8 @@
 }
 
 \usage{
-    lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = FALSE)
+    lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp=1000, 
+    latlon = FALSE, quiet = FALSE)
     }
 
 \arguments{
