@@ -1,5 +1,6 @@
-1.1-4: The auxcilliary function cor2() was changed to make Brian Ripley 
-       happy ;-)
+1.1-5: Some minor changes to three plotting functions
+
+1.1-4: The auxcilliary function cor2() was changed
 
 1.1-3: error in partial.mantel.test corrected
 

@@ -21,12 +21,6 @@
   \item{\dots}{other arguments}
 }
 
-\details{
-}
-
-\value{
-} 
-
 \seealso{\code{\link{Sncf.srf}} 
 \code{\link{plot.Sncf}} 
 }

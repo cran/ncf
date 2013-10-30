@@ -23,9 +23,6 @@
   \item{\dots}{other arguments}
 }
 
-\details{
-}
-
 \value{
 A plot of the correlation function against distance is produced. 95\% 
 pointwise confidence (or null) envelopes are superimposed.

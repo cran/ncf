@@ -16,10 +16,6 @@
   \item{\dots}{other arguments}
 }
 
-
-\details{
-}
-
 \value{
 If verbose is FALSE a list summarizing the regional correlation 
 is produced:

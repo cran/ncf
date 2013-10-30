@@ -14,9 +14,6 @@
   \item{\dots}{other arguments}
   }
 
-\details{
-}
-
 \value{
 A list summarizing the nonparametric (cross-)covariance
 function is returned.

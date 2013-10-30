@@ -23,9 +23,6 @@
   \item{\dots}{other arguments}
 }
 
-\details{
-}
-
 \value{
  A plot or panel-plot results. These represents the xy-plot of distance 
  against spatial (cross-)correlation for each cardinal direction.

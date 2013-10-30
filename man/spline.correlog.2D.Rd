@@ -89,8 +89,5 @@ direction but at distance 10 in the 90-degree direction.
 \code{\link{Sncf2D}}
 }
 
-\examples{
-}
-
 \keyword{smooth}
 \keyword{regression}

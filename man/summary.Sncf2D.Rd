@@ -14,9 +14,6 @@
   \item{\dots}{other arguments}
 }
 
-\details{
-}
-
 \value{
 A list summarizing the Nonparametric covariance function in 
 each cardinal direction results, each with the entires as 

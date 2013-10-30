@@ -492,17 +492,7 @@ plot.Sncf <- function(x, xmax = 0, text = TRUE, add = FALSE, ...){
 		}
 	if(!add){
 		plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), ylim
-			 = c(-1, 1), type = "l", xlab = "", ylab = "")
-		if(!is.null(obj$boot$boot.summary)){
-			if(text == TRUE) {
-			title(xlab = paste("Distance\nx: ", x, " {", 
-			xul[1], ", ", xul[2], "} r: ", ri, " {", 
-			cbarul[1], ", ", cbarul[2], "}", sep = ""), ylab = paste("Correlation\n",
-				y, " {", yul[1], ", ", yul[2], "}", sep = ""))
-		}}
-		if(!is.null(obj$boot$boot.summary)){
-		title(paste("Regional synch:", cbar, " {", rul[1], ", ", rul[2], "}", sep = ""))
-		}
+			 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
 	}
 	lines(obj$real$predicted$x, obj$real$predicted$y)
 	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
@@ -1002,13 +992,8 @@ plot.Sncf.cov <- function(x, xmax = 0, text = TRUE, ...){
 		na.rm = TRUE), 2)
 	}
 	plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), 
-		type = "l", xlab = "", ylab = "")
+		type = "l", xlab = "Distance", ylab = "Correlation")
 	lines(obj$real$predicted$x, obj$real$predicted$y)
-	if(text == TRUE) {
-		title(xlab = paste("Distance\nx: ", x, " {", xul[1], ", ", xul[2], "}", sep = 
-			""), ylab = paste("Covariance\n", y, " {", yul[1], ", ", yul[2], "}", 
-			sep = ""))
-	}
 	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
 	lines(c(0, max(obj$real$predicted$x)), c(1/exp(1), 1/exp(1)))
 	if(!is.null(obj$boot$boot.summary)){
@@ -1407,13 +1392,8 @@ plot.spline.correlog<-function(x, xmax = 0, text = TRUE, ...){
 	xul <- round(quantile(obj$boot$boot.summary$x.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
 	yul <- round(quantile(obj$boot$boot.summary$y.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 2)
 	plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), ylim
-		 = c(-1, 1), type = "l", xlab = "", ylab = "")
+		 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
 	lines(obj$real$predicted$x, obj$real$predicted$y)
-	if(text == TRUE) {
-		title(xlab = paste("Distance\n", x, " {", xul[1], ", ", xul[2], "}", sep = ""), 
-			ylab = paste("Moran similarity\n", y, " {", yul[1], ", ", yul[2], "}", 
-			sep = ""))
-	}
 	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
 	if(!is.null(obj$boot$boot.summary$predicted$x)){
 		lines(obj$boot$boot.summary$predicted$x, obj$boot$boot.summary$predicted$y["0.025", ])
@@ -2848,10 +2828,6 @@ plot.Sncf2D <- function(x, xmax = 0, text = TRUE, detail = FALSE, ...){
 		if(!is.null(obj$boot[[1]]$boot.summary)){
 			rul <- round(quantile(obj$boot[[i]]$boot.summary$cbar[,1], probs = c(0.025, 0.975), na.rm= TRUE), 2)
 		}
-		if(!is.null(obj$boot[[i]]$boot.summary)){
-			title(paste("Regional synch:", cbar))
-		}
-
 		lines(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y)
 
 	}
@@ -2871,17 +2847,9 @@ plot.Sncf2D <- function(x, xmax = 0, text = TRUE, detail = FALSE, ...){
 		}
 
 		plot(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y, xlim = c(-xmax, xmax), ylim
-			 = c(-1, 1), type = "l", xlab = "", ylab = "")
+			 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
 
-		if(!is.null(obj$boot[[i]]$boot.summary)){
-			if(text == TRUE) {
-			title(xlab = paste("Distance\nx: ", x, " {", 
-			xul[1], ", ", xul[2], "} r: ", ri, " {", 
-			cbarul[1], ", ", cbarul[2], "}", sep = ""), ylab = paste("Correlation\n",
-				y, " {", yul[1], ", ", yul[2], "}", sep = ""))
-		}
-	}
-
+	
 	lines(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y)
 	lines(c(-max(obj$real[[i]]$predict$x), max(obj$real[[i]]$predict$x)), c(0, 0))
 	lines(c(-max(obj$real[[i]]$predict$x), max(obj$real[[i]]$predict$x)), c(cbar, cbar))

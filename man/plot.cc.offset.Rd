@@ -16,9 +16,6 @@
   \item{\dots}{other arguments}
 }
 
-\details{
-}
-
 \value{
  A radial 'symbol' plot results. The radius represents the distance to peak 
  correlation (the mode) of the correlation function (in the positive 
