@@ -69,7 +69,7 @@ population synchrony. Trends in Ecology and Evolution, 11:427-431.
         )
 
 #mean correlation analysis
-    fit1 <- mSynch(x=z, resamp=10)
+    fit1 <- mSynch(x=z, resamp=500)
     print(fit1)
 }
 

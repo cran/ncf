@@ -1,0 +1,39 @@
+\name{plot.lisa.nc}
+\alias{plot.lisa.nc}
+\title{Plots multivariate local indicators of spatial association}
+\description{
+  `plot' method for class "lisa.nc".  
+}
+
+\usage{
+    \method{plot}{lisa.nc}(x, ctr = FALSE, \dots)
+}
+\arguments{
+  \item{x}{an object of class "lisa.nc", ususally, as a result of
+    a call to \code{\link{lisa.nc}}.}
+  \item{ctr}{if TRUE correlations will be centered before
+       plotting (zero-sized symbols represents the average correlation), 
+       if FALSE the observed correlations are used (zero-sized symbols represents zero
+       within neghborhood correlation)}
+  \item{\dots}{other arguments}
+}
+
+\value{
+ A bubble-plot of the multivariate LISA against spatial coordinates is produced. 
+ Negative (or below mean) within-neghborhood correlations are signified by squares. 
+ Positive (or above mean) values are signified by circles.
+ 
+ If a permutation test was performed, values significant at a nominal
+ (two-sided) 5\%-level will be respresented by filled symbols and non-significant
+ values by open symbols. Thus areas of significant positive (or above-average) correlation 
+ have  filled red circles and areas of significant negative (or below-average) correlation
+ have filled black squares
+
+} 
+
+\seealso{
+\code{\link{lisa}}
+\code{\link{lisa.nc}}
+}
+
+\keyword{spatial}

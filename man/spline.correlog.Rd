@@ -128,17 +128,17 @@ functions: estimation and testing. Environmental and Ecological Statistics, 8:53
         )
 
 #univariate spline correlogram
-    fit1 <- spline.correlog(x=x, y=y, z=z[,1], resamp = 5)
+    fit1 <- spline.correlog(x=x, y=y, z=z[,1], resamp = 100)
     \dontrun{plot.spline.correlog(fit1)}
     summary.spline.correlog(fit1)
 
 #multivariate spline correlogram
-    fit2 <- spline.correlog(x=x, y=y, z=z, resamp = 5)
+    fit2 <- spline.correlog(x=x, y=y, z=z, resamp = 100)
     \dontrun{plot.spline.correlog(fit2)}
     summary.spline.correlog(fit2)
 
 #multivariate spline cross-correlogram
-    fit3 <- spline.correlog(x=x, y=y, z=z, w=w, resamp = 5)
+    fit3 <- spline.correlog(x=x, y=y, z=z, w=w, resamp = 100)
     \dontrun{plot.spline.correlog(fit3)}
     summary.spline.correlog(fit3)
 }

@@ -1,3 +1,6 @@
+1.1-6: Added a new function to calculate mantel.correlog()rams,
+      updated lisa and lisa.nc, added a new spatial.plot() function.
+
 1.1-5: Some minor changes to three plotting functions
 
 1.1-4: The auxcilliary function cor2() was changed

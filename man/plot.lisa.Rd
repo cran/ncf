@@ -6,25 +6,27 @@
 }
 
 \usage{
-    \method{plot}{lisa}(x, ctr = FALSE, \dots)
+    \method{plot}{lisa}(x, negh.mean = FALSE, \dots)
 }
 \arguments{
   \item{x}{an object of class "lisa", ususally, as a result of
-    a call to \code{\link{lisa}} or \code{\link{lisa.nc}}.}
-  \item{ctr}{if TRUE correlations will be centered between
-       plotting (reference line is the average synchrony)}
+    a call to \code{\link{lisa}}.}
+  \item{negh.mean}{if TRUE size of symbols represents average observation 
+    in each neighborhood, if FALSE size of symbols represents the original 
+    observation}
   \item{\dots}{other arguments}
 }
 
 \value{
- A bubble-plot of the LISA against spatial coordinates is produced. 
- Negative (or below mean) values are signified by circles. 
- Positive (or above mean) values are signified by squares.
+ A bubble-plot of observations against spatial coordinates is produced. 
+ Below mean values are signified by squares. 
+ Above mean values are signified by squares.
  
- If a permutation test was performed, values significant at a nominal
+ If a permutation test was performed, observations for which the associated LISA 
+ statistic is positive and significant at a nominal
  (two-sided) 5\%-level will be respresented by filled symbols and non-significant
- values by open symbols.
-
+ values by open symbols. Thus spatial hot-spots are represented by red filled circles and 
+ cold-spots by black filled squares.
 } 
 
 \seealso{

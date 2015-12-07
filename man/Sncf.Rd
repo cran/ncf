@@ -135,12 +135,12 @@ spatial hierarchies in measles epidemics. Nature 414:716-723.
         rmvn.spa(x=x, y=y, p=2, method="gaus")
         )
 #multivariate nonparametric covariance function
-    fit1 <- Sncf(x=x, y=y, z=z, resamp = 5)
+    fit1 <- Sncf(x=x, y=y, z=z, resamp = 0)
     \dontrun{plot.Sncf(fit1)}
     summary.Sncf(fit1)
 
 #multivariate nonparametric cross-covariance function
-    fit2 <- Sncf(x=x, y=y, z=z, w=w, resamp = 5)
+    fit2 <- Sncf(x=x, y=y, z=z, w=w, resamp = 0)
     \dontrun{plot.Sncf(fit2)}
     summary.Sncf(fit2)
 }

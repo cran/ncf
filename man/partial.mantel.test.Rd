@@ -54,7 +54,7 @@ method = "pearson", quiet = FALSE)
     M2 <- sqrt(outer(y, y, "-")^2)
     M3 <- sqrt(outer(z, z, "-")^2)
 
-    partial.mantel.test(M1=M1, M2=M2, M3=M3, resamp=10)
+    partial.mantel.test(M1=M1, M2=M2, M3=M3, resamp=500)
 }
 
 \keyword{spatial}

@@ -1,0 +1,52 @@
+\name{spatial.plot}
+\alias{spatial.plot}
+\title{Simple wrapper around symbols to visualize spatial data}
+\description{
+  spatial.plot is a quick function to visualize spatial data using 
+  bubble plots
+}
+
+\usage{
+    spatial.plot(x, y, z, ctr=FALSE)
+    }
+
+\arguments{
+  \item{x}{vector of length n representing the x coordinates.}
+  \item{y}{vector of length n representing the y coordinates.}
+  \item{z}{vector of n representing the observation at each location.}
+  \item{ctr}{if TRUE observations will be centered before
+       plotting (zero-sized symbols represents average observations), 
+       if FALSE the original observ are used}
+}
+
+\details{
+  This is a simple function to visualize spatial data. Positive (or above average)
+  observations are shown by red circles, Negative (or below average) observations are 
+  shown as black squares. For hot/coldspot analysis using Local indicators of spatial 
+  association use \code{\link{lisa}}.
+}
+
+\value{
+  A bubble-plot of the spatial data is produced.
+}
+
+\author{Ottar N. Bjornstad \email{onb1@psu.edu}}
+
+\seealso{
+\code{\link{lisa}} 
+}
+
+\examples{
+#first generate some sample data
+    x <- expand.grid(1:20, 1:5)[,1]
+    y <- expand.grid(1:20, 1:5)[,2]
+
+#z data from an exponential random field
+    z <- rmvn.spa(x=x, y=y, p=2, method="gaus")
+    
+#plot data
+    \dontrun{spatial.plot(x=x, y=y, z=z, ctr=FALSE)}
+}
+
+\keyword{spatial}
+

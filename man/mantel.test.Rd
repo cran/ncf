@@ -58,7 +58,7 @@ latlon = FALSE, quiet = FALSE)
         )
 
 #the Mantel test
-    mantel.test(x=x, y=y, z=z[,1], resamp=10)
+    mantel.test(x=x, y=y, z=z[,1], resamp=500)
 }
 
 \keyword{spatial}

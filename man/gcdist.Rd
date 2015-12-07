@@ -17,7 +17,6 @@
 
 \details{
 Function for great circle distance -- due to T. Keitt.
-See \url{http://www.census.gov/cgi-bin/geo/gisfaq?Q5.1}.
 }
 
 \value{

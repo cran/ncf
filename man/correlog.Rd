@@ -99,15 +99,15 @@ patterns of genetic variation. Evolutionary Biology, 27, 95-155.
         )
 
 #Spatial correlogram 
-    fit1 <- correlog(x=x, y=y, z=z[,1], increment=2, resamp=5) 
+    fit1 <- correlog(x=x, y=y, z=z[,1], increment=2, resamp=0) 
     \dontrun{plot(fit1)}
 
 #Mantel correlogram 
-    fit2 <- correlog(x=x, y=y, z=z, increment=2, resamp=5) 
+    fit2 <- correlog(x=x, y=y, z=z, increment=2, resamp=0) 
     \dontrun{plot(fit2)}
 
 #Mantel cross-correlogram 
-    fit3 <- correlog(x=x, y=y, z=z, w=w, increment=2, resamp=5) 
+    fit3 <- correlog(x=x, y=y, z=z, w=w, increment=2, resamp=0) 
     \dontrun{plot(fit3)}
 }
 

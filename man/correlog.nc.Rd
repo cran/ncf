@@ -90,7 +90,7 @@ in ecological studies. Ecography, 21, 423-429.
         )
 
 #noncentered (Mantel) correlogram 
-    fit1 <- correlog.nc(x=x, y=y, z=z, increment=2, resamp=5)
+    fit1 <- correlog.nc(x=x, y=y, z=z, increment=2, resamp=500)
     \dontrun{plot.correlog(fit1)}
 }
 

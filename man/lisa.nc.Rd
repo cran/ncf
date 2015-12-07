@@ -2,7 +2,7 @@
 \alias{lisa.nc}
 \title{Non-centered inidcators of spatial association}
 \description{
-  lisa.nc is a function to estimate the (noncentred) local indicators of
+  lisa.nc is a function to estimate the (noncentred) multivariate local indicators of
   spatial association. The function requires multiple observations at each location.
   For single observations at each location use \code{lisa}
 }
@@ -19,7 +19,7 @@
         representing p (>1) observation at each location.}
   \item{neigh}{neighborhood size.}
   \item{resamp}{number of resamples under the NULL to generate p-values}
-  \item{latlon}{Not yet implemented: if TRUE, coordinates are latitude and
+  \item{latlon}{Nif TRUE, coordinates are latitude and
           longitude.}
   \item{na.rm}{if TRUE, NA's will be dealt with through 
            pairwise deletion of missing values.}
@@ -32,16 +32,16 @@
   a neighborhood. The function requires multiple observations at each location.  
   
   Missing values are allowed -- values are assumed missing at 
-  random.
+  random, and pairwise complete observations will be used.
 }
 
 \value{
-  An object of class "lisa" is returned, consisting of
+  An object of class "lisa.nc" is returned, consisting of
   the following components:
-  \item{n}{the number of pairs within each neighborhood.}
-  \item{dmean}{the actual mean of distance within each neighborhood.}
   \item{correlation}{the mean correlation within the neighborhood (neigh).}
   \item{p}{the permutation two-sided p-value for each distance-class.}
+  \item{n}{the number of pairs within each neighborhood.}
+  \item{dmean}{the actual mean of distance within each neighborhood.}
   \item{coord}{a list with the x and y coordinates.}
 }
 
@@ -53,7 +53,7 @@ Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical A
 
 \seealso{
 \code{\link{lisa}}
-\code{\link{plot.lisa}}
+\code{\link{plot.lisa.nc}}
 }
 
 \examples{
@@ -69,7 +69,7 @@ Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical A
 
 #lisa.nc analysis
     fit1 <- lisa.nc(x=x, y=y, z=z, neigh=3)
-    \dontrun{plot.lisa(fit1)}
+    \dontrun{plot.lisa.nc(fit1)}
 }
 
 \keyword{spatial}

@@ -8,16 +8,16 @@
 }
 
 \usage{
-    lisa(x, y, z, neigh, resamp, latlon, quiet = FALSE)
+    lisa(x, y, z, neigh, resamp, latlon=FALSE, quiet = FALSE)
     }
 
 \arguments{
   \item{x}{vector of length n representing the x coordinates (or latitude; see latlon).}
   \item{y}{vector of length n representing the y coordinates (or longitude).}
-  \item{z}{vector of n representing p (>1) observation at each location.}
+  \item{z}{vector of n representing the observation at each location.}
   \item{neigh}{neighborhood size.}
   \item{resamp}{number of resamples under the NULL to generate p-values}
-  \item{latlon}{Not yet implemented: if TRUE, coordinates are latitude and
+  \item{latlon}{if TRUE, coordinates are latitude and
           longitude.}
   \item{quiet}{if TRUE the counter is supressed during execution.}
 }
@@ -31,10 +31,13 @@
 \value{
   An object of class "lisa" is returned, consisting of
   the following components:
-  \item{n}{the number of pairs within each neighborhood.}
-  \item{dmean}{the actual mean of distance within each neighborhood.}
-  \item{correlation}{the mean autocorrelation within the neighborhood (neigh).}
-  \item{p}{the permutation two-sided p-value for each distance-class.}
+  \item{correlation}{the autocorrelation within the neighborhood (neigh) of each observation
+    measured using Moran's I.}
+  \item{p}{the permutation two-sided p-value for each observation.}
+  \item{mean}{the mean of the observations inside each neighborhooddistance within each neighborhood.}
+  \item{n}{the number of observations within each neighborhood.}
+  \item{dmean}{the actual mean distance within each neighborhood.}
+  \item{z}{the original observations}
   \item{coord}{a list with the x and y coordinates.}
 }
 
@@ -54,11 +57,11 @@ Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical A
     y <- expand.grid(1:20, 1:5)[,2]
 
 #z data from an exponential random field
-    z <- rmvn.spa(x=x, y=y, p=2, method="exp")
+    z <- rmvn.spa(x=x, y=y, p=2, method="gaus")
     
 #lisa analysis
-    fit1 <- lisa(x=x, y=y, z=z, neigh=3, resamp=100)
-    \dontrun{plot.lisa(fit1)}
+    fit1 <- lisa(x=x, y=y, z=z, neigh=3, resamp=500)
+    \dontrun{plot.lisa(fit1, negh.mean=FALSE)}
 }
 
 \keyword{spatial}

@@ -2080,8 +2080,7 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
 #of spatial association.
 #
 #I've commented the code crudely to make everything as transparent as possible. I'd greatly
-#appreciate any comment or suggestion (onb1@psu.edu). I'll try to keep an updated set of code at
-#http://onb.ent.psu.edu.
+#appreciate any comment or suggestion (onb1@psu.edu). 
 #
 #The outer code is in public domain. Upon modifying the code, please comment it.
 #
@@ -2108,19 +2107,16 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
 
 #then generating geographic distances
 
-if(latlon){
-   stop("\n latlon coordinates not yet implemented for lisa(). Convert to UTM and execute with latlon=FALSE")
-}
-#	if(latlon){
-#                #these are geographic distances from lat-lon coordinates
-#               dmat <- matrix(0, nrow = n, ncol = n)
-#                for(i in 1:(n-1)) {
-#                        for(j in (i+1):n) {
-#                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-#                                dmat[i, j] <- dmat[j, i]
-#                        }
-#                }
-#        }
+	if(latlon){
+                #these are geographic distances from lat-lon coordinates
+               dmat <- matrix(0, nrow = n, ncol = n)
+                for(i in 1:(n-1)) {
+                        for(j in (i+1):n) {
+                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
+                                dmat[i, j] <- dmat[j, i]
+                        }
+                }
+        }
 
 	else{
 		dmat <- sqrt(outer(x,x, "-")^2+outer(y,y,"-")^2)
@@ -2131,6 +2127,12 @@ if(latlon){
 	zx <- t(outer(zscal, zscal))
 
 	dkl <- ifelse(dmat>0&dmat<neigh,1,NA)	#flaggs obs within the neigh
+  
+#calculate mean value of z within neigh
+  negz=dkl*z
+  diag(negz)=z
+  zmean=apply(negz,2,mean, na.rm=TRUE)
+
 	nlok <- apply(dkl, 2, sum, na.rm= TRUE)
 	dmean <- apply(dmat*dkl, 2, mean, na.rm= TRUE)
 	moran <- apply(zx*dkl, 2, mean, na.rm= TRUE)
@@ -2139,7 +2141,7 @@ if(latlon){
 
   if(resamp>0){
      perm<-matrix(NA, nrow=resamp, ncol=n)
-
+ 
     for(i in 1:resamp){
 
     if(! quiet)	{cat(i, " of ", resamp, "\n")}
@@ -2153,11 +2155,53 @@ if(latlon){
 
 
   }
-	res <- list(n = nlok, dmean = dmean, correlation = moran, p=p, coord=list(x=x, y=y), call=deparse(match.call()))
+	res <- list(correlation = moran, p=p, mean=zmean, dmean = dmean, n = nlok, z=z,coord=list(x=x, y=y), call=deparse(match.call()))
 
 	class(res) <- "lisa"
 	res
 }
+
+
+##############################################################################################
+plot.lisa<-function(x, negh.mean=FALSE, ...){
+##############################################################################################
+obj<-x
+
+if(negh.mean){
+z <- obj$mean
+}
+else{
+  z<-obj$z
+}
+
+x <- obj$coord$x
+y <- obj$coord$y
+
+plot(x,y,type="n")
+sel <- is.finite(z)
+x <- split(x,z-mean(z, na.rm=TRUE)>0)
+y <- split(y,z-mean(z, na.rm=TRUE)>0)
+sel <- split(sel, z-mean(z, na.rm=TRUE)>0)
+z2 <- split(z-mean(z, na.rm=TRUE),z-mean(z, na.rm=TRUE)>0)
+
+bgc<-rep(0, length(z))
+bgc <- split(bgc,z-mean(z, na.rm=TRUE)>0)
+
+   if(!is.null(obj$p)){
+     bgc<-rep(0, length(z))
+     bgc<-ifelse(obj$p<0.025, 1, 0)
+     bgc[obj$p<0.025 & z-mean(z, na.rm=TRUE)>0]<-2
+     bgc <- split(bgc,z-mean(z, na.rm=TRUE)>0)
+   }
+
+
+if(!is.null(length(z2[[1]][sel[[1]]]))){
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
+
+if(!is.null(length(z2[[1]][sel[[2]]]))){
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
+}
+
 
 
 ##############################################################################################
@@ -2202,18 +2246,15 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
 	#then generating geographic distances
 
   if(latlon){
-   stop("\n latlon coordinates not yet implemented for lisa.nc(). Convert to UTM and execute with latlon=FALSE")
-  }
-  #	if(latlon){
-  #                #these are geographic distances from lat-lon coordinates
-  #               dmat <- matrix(0, nrow = n, ncol = n)
-  #                for(i in 1:(n-1)) {
-  #                        for(j in (i+1):n) {
-  #                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-  #                                dmat[i, j] <- dmat[j, i]
-  #                        }
-  #                }
-  #        }
+                  #these are geographic distances from lat-lon coordinates
+                 dmat <- matrix(0, nrow = n, ncol = n)
+                  for(i in 1:(n-1)) {
+                          for(j in (i+1):n) {
+                                  dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
+                                  dmat[i, j] <- dmat[j, i]
+                          }
+                  }
+          }
 
 	else{
 		dmat <- sqrt(outer(x,x, "-")^2+outer(y,y,"-")^2)
@@ -2246,13 +2287,13 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
 
 
 
-	res <- list(n = nlok, dmean = dmean, correlation = moran, p=p, coord=list(x=x, y=y), call=deparse(match.call()))
-	class(res) <- "lisa"
+	res <- list(correlation = moran, p=p, n = nlok, dmean = dmean, coord=list(x=x, y=y), call=deparse(match.call()))
+	class(res) <- "lisa.nc"
 	res
 }
 
 ##############################################################################################
-plot.lisa<-function(x, ctr = FALSE, ...){
+plot.lisa.nc<-function(x, ctr = FALSE, ...){
 ##############################################################################################
 obj<-x
 if(ctr){
@@ -2274,17 +2315,38 @@ bgc <- split(bgc,z>0)
 
    if(!is.null(obj$p)){
      bgc<-rep(0, length(z))
-     bgc<-ifelse(obj$p<0.025, 2, 0)
-     bgc[obj$p<0.025 & z >0]<-1
+     bgc<-ifelse(obj$p<0.025, 1, 0)
+     bgc[obj$p<0.025 & z >0]<-2
      bgc <- split(bgc,z>0)
    }
 
 
 if(!is.null(length(z2[[1]][sel[[1]]]))){
-  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],circles=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=2, bg=bgc[[1]][sel[[1]]])}
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
 
 if(!is.null(length(z2[[1]][sel[[2]]]))){
-  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],squares=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=1, bg=bgc[[2]][sel[[2]]])}
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
+}
+
+##############################################################################################
+spatial.plot<-function(x, y, z, ctr=FALSE){
+##############################################################################################
+if(ctr){
+  z <- z-mean(z, na.rm= TRUE)}
+
+plot(x,y,type="n")
+sel <- is.finite(z)
+x <- split(x,z>0)
+y <- split(y,z>0)
+sel <- split(sel, z>0)
+z2 <- split(z,z>0)
+
+
+if(!is.null(length(z2[[1]][sel[[1]]]))){
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=1)}
+
+if(!is.null(length(z2[[1]][sel[[2]]]))){
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=2)}
 }
 
 ##############################################################################################
@@ -2364,10 +2426,6 @@ Sncf2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npo
 #(using a smoothing spline as an equivalent kernel) in 8 (or arbitrary) directions (North - Southeast) 
 #through calculateing projected distances onto the different bearings (i.e. all data are used for each 
 #direction = 0,22.5,45,67.5,90,112.5,135,157.5)
-#
-#I've commented the code crudely to make everything as transparent as possible. I'd greatly
-#appreciate any comment or suggestion (onb1@psu.edu). I'll try to keep an updated set of code at
-#http://onb.ent.psu.edu. 
 #
 #The outer code is in public domain. Upon modifying the code, please comment it.
 #
@@ -3409,6 +3467,91 @@ for(d in 1:length(ang)){
 	class(res) <- "Sncf2D"
 	res
 }
+
+##############################################################################################
+mantel.correlog<-function(dmat, zmat, wmat=NULL, increment, resamp = 1000, quiet=FALSE){
+##############################################################################################
+
+if(is.null(wmat)){
+	moran <- zmat[lower.tri(zmat)]
+	}
+
+else {
+    moran <- (zmat-mean(zmat))*(wmat-mean(wmat))/(sd(zmat)*sd(wmat))
+	zero <- mean(diag(moran), na.rm= TRUE)
+	moran <- moran[row(moran)>col(moran)]
+}
+
+if(resamp != 0){
+	dmat2 <- dmat
+	moran2 <- moran
+}
+
+if(is.null(wmat)){
+	dmat <- dmat[lower.tri(dmat)]
+}
+else {
+	dmat <- dmat[row(dmat)>col(dmat)]
+}
+
+
+dkl <- ceiling(dmat/increment)
+nlok <- sapply(split(moran, dkl), length)
+dmean <- sapply(split(dmat, dkl), mean, na.rm = TRUE)
+moran <- sapply(split(moran, dkl), mean, na.rm = TRUE)
+
+ly <- 1:length(dmean)
+x <- c(dmean[ly[moran < 0][1]], dmean[ly[moran < 0][1] - 1])
+y <- c(moran[ly[moran < 0][1] - 1], moran[ly[moran < 0][1]])
+if(moran[1] < 0) {
+		tmp <- 0
+	}
+	else {
+		if(sum(moran<0)>0){
+			tmp <- lm(x ~ y)[[1]][1]
+		}
+		else{
+			tmp <- NA
+		}
+	}
+
+  p<-NULL
+
+	if(resamp != 0){
+		perm <- matrix(NA, ncol = length(moran), nrow = resamp)
+
+    n<-dim(zmat)[1]
+		for(i in 1:resamp){
+			trekk <-sample(1:n)
+			dma <- dmat2[trekk,trekk]
+			mor <- moran2
+
+			if(is.null(wmat)){
+				dma <- dma[lower.tri(dma)]
+			}
+			else {
+				dma <- dma[row(dma)>col(dma)]
+			}
+
+			dkl <- ceiling(dma/increment)	#generates the distance matrices
+			perm[i,] <- sapply(split(mor, dkl), mean, na.rm = TRUE)
+		if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		}
+
+  p=(apply(moran<=t(perm),1,sum))/(resamp+1)
+  p=apply(cbind(p, 1-p), 1, min) + 1/(resamp+1)
+	}
+
+	res <- list(n = nlok, mean.of.class = dmean, correlation = moran,
+  x.intercept = tmp, p=p, call=deparse(match.call()))
+
+	if(!is.null(wmat)){
+		res$corr0 <- zero
+	}
+	class(res) <- "correlog"
+	res
+}
+
 ############################################################################################
 cor2<-function(x, y = NULL, circ=FALSE){
 ############################################################################################
