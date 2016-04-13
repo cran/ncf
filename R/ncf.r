@@ -1512,6 +1512,7 @@ NAO <- FALSE
 
 	#then generating geographic distances
 	if(latlon){
+				n<-length(x)
                 #these are geographic distances from lat-lon coordinates
                 dmat <- matrix(0, nrow = n, ncol = n)
                 for(i in 1:(n-1)) {
@@ -1648,6 +1649,7 @@ correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, 
 
 #then generating geographic distances
 	if(latlon){
+		n<-length(x)
                 #these are geographic distances from lat-lon coordinates
                 dmat <- matrix(0, nrow = n, ncol = n)
                 for(i in 1:(n-1)) {
@@ -2163,11 +2165,11 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
 
 
 ##############################################################################################
-plot.lisa<-function(x, negh.mean=FALSE, ...){
+plot.lisa<-function(x, neigh.mean=FALSE, add=FALSE, inches=0.2, ...){
 ##############################################################################################
 obj<-x
 
-if(negh.mean){
+if(neigh.mean){
 z <- obj$mean
 }
 else{
@@ -2177,7 +2179,9 @@ else{
 x <- obj$coord$x
 y <- obj$coord$y
 
-plot(x,y,type="n")
+if(add==FALSE){
+	plot(x,y,type="n")
+}
 sel <- is.finite(z)
 x <- split(x,z-mean(z, na.rm=TRUE)>0)
 y <- split(y,z-mean(z, na.rm=TRUE)>0)
@@ -2196,34 +2200,16 @@ bgc <- split(bgc,z-mean(z, na.rm=TRUE)>0)
 
 
 if(!is.null(length(z2[[1]][sel[[1]]]))){
-  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=inches, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
 
 if(!is.null(length(z2[[1]][sel[[2]]]))){
-  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=inches, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
 }
-
 
 
 ##############################################################################################
 lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = FALSE){
 ##############################################################################################
-#lisa.nc is a function to estimate the (noncentred) local indicators
-#of spatial association. The function requires mulitple observations at each location.
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         matrix of dimension n x p representing p observation at each location
-#neigh 	   the size of the local neighborhood
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#
-#VALUE
-#an object of class lisa is returned consisted of the following components:
-#correlation    is the mean within neigh
-#dmean		is the realized mean of distance within neigh
-#n              is the number of pairs within neigh
-#######################################################################################
 
   if(is.null(dim(z))){
     stop("\n z is univariate. Use lisa()")
@@ -2293,7 +2279,7 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
 }
 
 ##############################################################################################
-plot.lisa.nc<-function(x, ctr = FALSE, ...){
+plot.lisa.nc<-function(x, ctr = FALSE, add=FALSE, inches=0.2, ...){
 ##############################################################################################
 obj<-x
 if(ctr){
@@ -2303,7 +2289,9 @@ else{z <- obj$correlation}
 x <- obj$coord$x
 y <- obj$coord$y
 
-plot(x,y,type="n")
+if(add==FALSE){
+	plot(x,y,type="n")
+	}
 sel <- is.finite(z)
 x <- split(x,z>0)
 y <- split(y,z>0)
@@ -2322,19 +2310,22 @@ bgc <- split(bgc,z>0)
 
 
 if(!is.null(length(z2[[1]][sel[[1]]]))){
-  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=inches, add= TRUE, fg=1, bg=bgc[[1]][sel[[1]]])}
 
 if(!is.null(length(z2[[1]][sel[[2]]]))){
-  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=inches, add= TRUE, fg=2, bg=bgc[[2]][sel[[2]]])}
 }
 
+
 ##############################################################################################
-spatial.plot<-function(x, y, z, ctr=FALSE){
+spatial.plot<-function(x, y, z, ctr=TRUE, add=FALSE, inches=0.2, ...){
 ##############################################################################################
 if(ctr){
   z <- z-mean(z, na.rm= TRUE)}
 
-plot(x,y,type="n")
+if(add==FALSE){
+	plot(x,y,type="n")
+}
 sel <- is.finite(z)
 x <- split(x,z>0)
 y <- split(y,z>0)
@@ -2343,10 +2334,10 @@ z2 <- split(z,z>0)
 
 
 if(!is.null(length(z2[[1]][sel[[1]]]))){
-  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=.2, add= TRUE, fg=1, bg=1)}
+  symbols(x[[1]][sel[[1]]],y[[1]][sel[[1]]],squares=-z2[[1]][sel[[1]]], inches=inches, add= TRUE, fg=1, bg=1)}
 
 if(!is.null(length(z2[[1]][sel[[2]]]))){
-  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=.2, add= TRUE, fg=2, bg=2)}
+  symbols(x[[2]][sel[[2]]],y[[2]][sel[[2]]],circles=z2[[2]][sel[[2]]], inches=inches, add= TRUE, fg=2, bg=2)}
 }
 
 ##############################################################################################

@@ -6,7 +6,7 @@
 }
 
 \usage{
-    \method{plot}{lisa.nc}(x, ctr = FALSE, \dots)
+    \method{plot}{lisa.nc}(x, ctr = FALSE, add=FALSE, inches=0.2, \dots)
 }
 \arguments{
   \item{x}{an object of class "lisa.nc", ususally, as a result of
@@ -15,6 +15,8 @@
        plotting (zero-sized symbols represents the average correlation), 
        if FALSE the observed correlations are used (zero-sized symbols represents zero
        within neghborhood correlation)}
+ \item{add}{if TRUE, a lisa-plot will be added to a pre-existing plot}
+  \item{inches}{scales the size of the symbols}
   \item{\dots}{other arguments}
 }
 

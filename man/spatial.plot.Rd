@@ -7,7 +7,7 @@
 }
 
 \usage{
-    spatial.plot(x, y, z, ctr=FALSE)
+    spatial.plot(x, y, z, ctr=TRUE, add=FALSE, inches=.2, \dots)
     }
 
 \arguments{
@@ -17,6 +17,10 @@
   \item{ctr}{if TRUE observations will be centered before
        plotting (zero-sized symbols represents average observations), 
        if FALSE the original observ are used}
+  \item{add}{if TRUE, a lisa-plot will be added to a pre-existing plot}
+  \item{inches}{scales the size of the symbols}
+  \item{\dots}{other arguments}
+
 }
 
 \details{

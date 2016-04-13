@@ -6,14 +6,16 @@
 }
 
 \usage{
-    \method{plot}{lisa}(x, negh.mean = FALSE, \dots)
+    \method{plot}{lisa}(x, neigh.mean = FALSE, add=FALSE, inches=0.2, \dots)
 }
 \arguments{
   \item{x}{an object of class "lisa", ususally, as a result of
     a call to \code{\link{lisa}}.}
-  \item{negh.mean}{if TRUE size of symbols represents average observation 
+  \item{neigh.mean}{if TRUE size of symbols represents average observation 
     in each neighborhood, if FALSE size of symbols represents the original 
     observation}
+  \item{add}{if TRUE, a lisa-plot will be added to a pre-existing plot}
+  \item{inches}{scales the size of the symbols}
   \item{\dots}{other arguments}
 }
 

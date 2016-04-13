@@ -1,7 +1,7 @@
-9f50d3f9ce9f73b0d734acd94a37c215 *CHANGES
-2c8048ff834724f91879e31fe7f6b97b *DESCRIPTION
+5c00da9ca610812f421fd78bd871d772 *CHANGES
+def9a68bc71d3168e4dcc2305c26f138 *DESCRIPTION
 637362b019d1dd2debec4cd34a8d78d5 *NAMESPACE
-8354b0cda42c19fa2873e477c67e510e *R/ncf.r
+155e5b1a79a4312bc721b1369bf752db *R/ncf.r
 8c722a4c874cde60db0091eee09f0bec *data/lbm.rda
 4dcb468a735c234bd6aebd4e356bc5c0 *man/Sncf.Rd
 85fe2528aa5b1e2cb8391f33321cc8a9 *man/Sncf.srf.Rd
@@ -24,12 +24,12 @@ e34f876729dc895f93f5ffab02e844aa *man/mantel.correlog.Rd
 64c0ee474da2112f7f68d8b44ab39d03 *man/plot.Sncf2D.Rd
 fe0508ef1d780232493f9a9ae54bf049 *man/plot.cc.offset.Rd
 5611e48f5e377315a1afaa29bdd4da51 *man/plot.correlog.Rd
-10eca1c79d7c19631b9e8966063e0c73 *man/plot.lisa.Rd
-e076b65dfce0756bb18988077c1a7964 *man/plot.lisa.nc.Rd
+d03067f616b31ced6d2b13f5d79cf65c *man/plot.lisa.Rd
+9fe85040a67caa88a7a1a8dbb446cbd2 *man/plot.lisa.nc.Rd
 fb0407ff58295e6ed96953f50215ad55 *man/plot.spline.correlog.Rd
 7750dc25eccd3efe33e6bbf4afcebd53 *man/print.mSynch.Rd
 7145f1d3e665e1393813fdbe74a38ecb *man/rmvn.spa.Rd
-ed402cfed66dcbc9a3f3a367f8ca2d4a *man/spatial.plot.Rd
+dbf49d7ca094d6995d708d7990cd5df3 *man/spatial.plot.Rd
 1be3b6901688a8ae676eb491ac3bba2c *man/spline.correlog.2D.Rd
 492bdbfa868b94668e73a9453d2e2c50 *man/spline.correlog.Rd
 afdbe69e67ffac996feaeef8b5a8861b *man/summary.Sncf.Rd

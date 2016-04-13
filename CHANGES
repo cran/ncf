@@ -1,5 +1,9 @@
+1.1-7: Small changes to plot.lisa.nc, plot.lisa and spatial.plot.
+       Bugs in correlog and correlog.nc when latlon=TRUE fixed
+
 1.1-6: Added a new function to calculate mantel.correlog()rams,
       updated lisa and lisa.nc, added a new spatial.plot() function.
+      Compliant with new CRAN checks
 
 1.1-5: Some minor changes to three plotting functions
 
