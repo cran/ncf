@@ -6,13 +6,15 @@
 }
 
 \usage{
-    \method{plot}{cc.offset}(x, xmax = 0, \dots)
+    \method{plot}{cc.offset}(x, xmax = 0, xlim=NULL, ylim=NULL, \dots)
 }
 \arguments{
   \item{x}{an object of class "cc.offset", ususally, as
   a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.}
   \item{xmax}{The maximal distance to be plotted on the x-axis. 
   If set to zero the maximum distance in the data will be used.}
+  \item{xlim}{Limits for x-axis.}
+  \item{ylim}{Limits for y-axis.}
   \item{\dots}{other arguments}
 }
 

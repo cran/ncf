@@ -1,60 +1,7 @@
 ##############################################################################################
 Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE,
-	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE, quiet=FALSE){
+	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE, quiet=TRUE){
 ##############################################################################################
-#Sncf is the function to estimate the nonparametric covariance (or cross-covariance) function
-#(using a smoothing spline as an equivalent kernel) as discussed in
-#Bjornstad et al. (1999; Trends in Ecology and Evolution 14:427-431)
-#
-#The function requires multiple observations at each location (use spline.correlog
-#otherwise).
-#
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates (or longitude; see latlon)
-#y         vector of length n representing the y coordinates (or latitude; see latlon)
-#z         matrix of dimension n x p representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate
-#	      the spatial cross-correlation function)
-#
-#df        degrees of freedom for the spline. The default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a
-#             null distribution for the estimator under randomization
-#resamp    is the number of resamples for the bootstrap or the null distribution
-#npoints   is the number of points at which to save the value for the spline function (and
-#             confidence envelope / null distribution)
-#save      if True, the whole matrix of output from the resampling is saved (an resamp x npoints
-#             dimensional matrix)
-#filter    if True, the Fourier filter method of Hall and coworkers (Probability Theory and
-#             Related Fields, 1994, 99:399-424; Annals of Statistics, 1994, 22:	2115-2134) is
-#             applied to ensure positive semidefiniteness of the estimator.
-#             Be warned: more work may be needed on this.
-#fw         if filter is True, it may be useful to truncate the function at some distance
-#             w sets the truncation distance. when set to zero no truncation is done.
-#xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
-#	      than xmax is omitted
-#na.rm     if TRUE, missing values is accomodated through a pairwise deletion.
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#circ      if TRUE, the data are assumed circular, and an angular version of
-#		the Pearson's product moment correlation is used
-#
-#VALUE
-#an object of class Sncf is returned consisted of the following components:
-#real      $predicted$x is the x coordinates for the fitted covariance function
-#          $predcited$y is the y values for the covariance function
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is
-#	       initially negative, the distance calculated is negative
-#	   $e.intercept is the lowest value at which the function is <= 1/e
-#          $y.intercept is the extrapolated value at x=0
-#          $cbar.intercept is distance at which regional average sychrony is reach
-#          $cbar is the regional average sychrony
-#boot      gives the analogous output from the bootstrap or randomization resampling
-#boot$summary  gives the full vector of output for the x.intercept, y.intercept,
-#	   e.intercept, and the cbar.intercept
-#              and a quantile summary for the resampling distribution
-#boot$boot     if save= TRUE, the full raw matrices from the resampling is saved
-############################################################################################
-
 #the following sets up the output:
 	real <- list(cbar = NA, x.intercept = NA, e.intercept = NA, y.intercept = NA, cbar.intercept = NA,
 		predicted = list(x = matrix(NA, nrow = 1, ncol = npoints),
@@ -472,68 +419,60 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 }
 
 ##############################################################################################
-plot.Sncf <- function(x, xmax = 0, text = TRUE, add = FALSE, ...){
+plot.Sncf=function (x, xmax = 0, ylim=c(-1,1), add = FALSE, ...) 
 ##############################################################################################
-#this is the generic plot function for Sncf objects
-##############################################################################################
-  obj<-x
-	xmax <- ifelse(xmax == 0, obj$max.distance, xmax)
-	x <- round(obj$real$x, 1)
-	cbar <- round(obj$real$cbar, 2)
-	if(!is.null(obj$boot$boot.summary)){
-	rul <- round(quantile(obj$boot$boot.summary$cbar[,1], probs = c(0.025, 0.975), na.rm= TRUE), 2)
-		}
-	ri <- round(obj$real$cbar.intercept, 1)
-	y <- round(obj$real$y, 2)
-	if(!is.null(obj$boot$boot.summary)){
-	xul <- round(quantile(obj$boot$boot.summary$x.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
-	cbarul <- round(quantile(obj$boot$boot.summary$cbar.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
-	yul <- round(quantile(obj$boot$boot.summary$y.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 2)
-		}
-	if(!add){
-		plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), ylim
-			 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
-	}
-	lines(obj$real$predicted$x, obj$real$predicted$y)
-	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
-	lines(c(0, max(obj$real$predicted$x)), c(cbar, cbar))
-	if(!is.null(obj$boot$boot.summary)){
-	lines(obj$boot$boot.summary$predicted$x, obj$boot$boot.summary$predicted$y["0.025", ])
-	lines(obj$boot$boot.summary$predicted$x, obj$boot$boot.summary$predicted$y["0.975", ])}
+{
+    xmax <- ifelse(xmax == 0, x$max.distance, xmax)
+    cbar <- x$real$cbar
+    if (!add) {
+        plot(x$real$predicted$x, x$real$predicted$y, xlim = c(0, 
+            xmax), ylim = ylim, type = "l", xlab = "Distance", 
+            ylab = "Correlation")
+    }
+    if (!is.null(x$boot$boot.summary)) {
+ polygon(c(x$boot$boot.summary$predicted$x,rev(x$boot$boot.summary$predicted$x)), c(x$boot$boot.summary$predicted$y["0.025",], rev(x$boot$boot.summary$predicted$y["0.975",])), col=gray(0.8), lty=0)
+ }
+    lines(x$real$predicted$x, x$real$predicted$y)
+    lines(c(0, max(x$real$predicted$x)), c(0, 0))
+    lines(c(0, max(x$real$predicted$x)), c(cbar, cbar))
 }
+
+##############################################################################################
+print.Sncf=function(x, ...){
+##############################################################################################
+cat("This is an object of class Sncf produced by the call:\n\n", x$call, "\n\n Use summary() or plot() for inspection,  (or print.default() to see all the gory details).")}
 
 ##############################################################################################
 summary.Sncf<-function(object, ...){
 ##############################################################################################
 #this is the generic summary function for Sncf objects
 ##############################################################################################
-  obj<-object
-	xy <- cbind(obj$real$x.intercept, obj$real$e.intercept,obj$real$y.intercept,obj$real$cbar.intercept)
+	xy <- cbind(object$real$x.intercept, object$real$e.intercept,object$real$y.intercept,object$real$cbar.intercept)
 	dimnames(xy) <- list(c("intercepts"), c("x", "e","y", "cbar"))
-	if(!is.null(obj$boot$boot.summary)){
-	yd <- apply(obj$boot$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	if(!is.null(object$boot$boot.summary)){
+	yd <- apply(object$boot$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	xd <- apply(obj$boot$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	xd <- apply(object$boot$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	ed <- apply(obj$boot$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	ed <- apply(object$boot$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	synchd <- quantile(obj$boot$boot.summary$cbar[,1], probs = c(0, 0.025, 0.25, 0.5,
+	synchd <- quantile(object$boot$boot.summary$cbar[,1], probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	cbard <- quantile(obj$boot$boot.summary$cbar.intercept[,1], probs = c(0, 0.025, 0.25, 0.5,
+	cbard <- quantile(object$boot$boot.summary$cbar.intercept[,1], probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
 	xyd <- cbind(xd, ed, yd, cbard)
 	dimnames(xyd) <- list(c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), c("x", "e", "y", "cbar"))}
-	if(is.null(obj$boot$boot.summary)){
+	if(is.null(object$boot$boot.summary)){
 	synchd <- NULL
 	xyd <- NULL	
 	}
-	res <- list(call = obj$call, Regional.synch = obj$real$cbar, Squantile = synchd, estimates = xy, quantiles = xyd)
+	res <- list(call = object$call, Regional.synch = object$real$cbar, Squantile = synchd, estimates = xy, quantiles = xyd)
 	res
 }
 
 ##############################################################################################
 Sncf.srf <- function(x, y, z, w=NULL, avg=NULL, avg2=NULL, corr= TRUE, df = NULL, type = "boot", resamp = 0, 
-	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE, quiet = FALSE){
+	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE, quiet = TRUE){
 ##############################################################################################
 #Sncf.srf is the function to estimate the nonparametric covariance function for a 
 #stationary random field (expectation and variance identical). The function uses a
@@ -978,35 +917,43 @@ else {
 	res
 }
 
+
 ##############################################################################################
-plot.Sncf.cov <- function(x, xmax = 0, text = TRUE, ...){
+plot.Sncf=function (x, xmax = 0, ylim=c(-1,1), add = FALSE, ...) 
 ##############################################################################################
-  obj<-x
-	xmax <- ifelse(xmax == 0, max(obj$real$predicted$x), xmax)
-	x <- round(obj$real$x, 1)
-	y <- round(obj$real$y, 2)
-	if(!is.null(obj$boot$boot.summary)){
-	xul <- round(quantile(obj$boot.summary$x.intercept, probs = c(0.025, 0.975), 
-		na.rm = TRUE), 1)
-	yul <- round(quantile(obj$boot.summary$y.intercept, probs = c(0.025, 0.975), 
-		na.rm = TRUE), 2)
-	}
-	plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), 
-		type = "l", xlab = "Distance", ylab = "Correlation")
-	lines(obj$real$predicted$x, obj$real$predicted$y)
-	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
-	lines(c(0, max(obj$real$predicted$x)), c(1/exp(1), 1/exp(1)))
-	if(!is.null(obj$boot$boot.summary)){
-	lines(obj$boot.summary$predicted$x, obj$boot.summary$predicted$y[
-		"0.025",  ])
-	lines(obj$boot.summary$predicted$x, obj$boot.summary$predicted$y[
-		"0.975",  ])
-	}
+{
+    xmax <- ifelse(xmax == 0, x$max.distance, xmax)
+    cbar <- x$real$cbar
+    if (!add) {
+        plot(x$real$predicted$x, x$real$predicted$y, xlim = c(0, 
+            xmax), ylim = ylim, type = "l", xlab = "Distance", 
+            ylab = "Correlation")
+    }
+    if (!is.null(x$boot$boot.summary)) {
+ polygon(c(x$boot$boot.summary$predicted$x,rev(x$boot$boot.summary$predicted$x)), c(x$boot$boot.summary$predicted$y["0.025",], rev(x$boot$boot.summary$predicted$y["0.975",])), col=gray(0.8), lty=0)
+ }
+    lines(x$real$predicted$x, x$real$predicted$y)
+    lines(c(0, max(x$real$predicted$x)), c(0, 0))
+    lines(c(0, max(x$real$predicted$x)), c(cbar, cbar))
+}
+
+
+##############################################################################################
+plot.Sncf.cov <- function(x, xmax = 0, ...){
+##############################################################################################
+	xmax <- ifelse(xmax == 0, max(x$real$predicted$x), xmax)
+	plot(x$real$predicted$x, x$real$predicted$y, xlim = c(0, xmax), 
+		type = "l", xlab = "Distance", ylab = "Covariance")
+    if (!is.null(x$boot$boot.summary)) {
+ polygon(c(x$boot$boot.summary$predicted$x,rev(x$boot$boot.summary$predicted$x)), c(x$boot$boot.summary$predicted$y["0.025",], rev(x$boot$boot.summary$predicted$y["0.975",])), col=gray(0.8), lty=0)
+ }
+	lines(x$real$predicted$x, x$real$predicted$y)
+	lines(c(0, max(x$real$predicted$x)), c(0, 0))
 }
 
 ##############################################################################################
 spline.correlog<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE, 
-	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE, quiet = FALSE){
+	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE, quiet = TRUE){
 ##############################################################################################
 #spline.correlog is the function to estimate the spline correlogram discussed in 
 #Bjornstad & Falck (2001, Evironmental and Ecological Statistics 8:53-70)
@@ -1380,25 +1327,20 @@ if(resamp != 0) {
 	res
 }
 
+
 ##############################################################################################
-plot.spline.correlog<-function(x, xmax = 0, text = TRUE, ...){
+plot.spline.correlog<-function(x, xmax = 0, ylim=c(-1,1), ...){
 ##############################################################################################
 #this is the generic plot function for spline.correlog objects
 ##############################################################################################
-  obj<-x
-	xmax <- ifelse(xmax == 0, obj$max.distance, xmax)
-	x <- round(obj$real$x, 1)
-	y <- round(obj$real$y, 2)
-	xul <- round(quantile(obj$boot$boot.summary$x.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
-	yul <- round(quantile(obj$boot$boot.summary$y.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 2)
-	plot(obj$real$predicted$x, obj$real$predicted$y, xlim = c(0, xmax), ylim
-		 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
-	lines(obj$real$predicted$x, obj$real$predicted$y)
-	lines(c(0, max(obj$real$predicted$x)), c(0, 0))
-	if(!is.null(obj$boot$boot.summary$predicted$x)){
-		lines(obj$boot$boot.summary$predicted$x, obj$boot$boot.summary$predicted$y["0.025", ])
-		lines(obj$boot$boot.summary$predicted$x, obj$boot$boot.summary$predicted$y["0.975", ])
-	}
+	xmax <- ifelse(xmax == 0, x$max.distance, xmax)
+	plot(x$real$predicted$x, x$real$predicted$y, xlim = c(0, xmax), ylim
+		 = ylim, type = "l", xlab = "Distance", ylab = "Correlation")
+	   if (!is.null(x$boot$boot.summary)) {
+		 polygon(c(x$boot$boot.summary$predicted$x,rev(x$boot$boot.summary$predicted$x)), c(x$boot$boot.summary$predicted$y["0.025",], rev(x$boot$boot.summary$predicted$y["0.975",])), col=gray(0.8), lty=0)
+ }
+	lines(x$real$predicted$x, x$real$predicted$y)
+	lines(c(0, max(x$real$predicted$x)), c(0, 0))
 }
 
 ##############################################################################################
@@ -1406,24 +1348,28 @@ summary.spline.correlog<-function(object, ...){
 ##############################################################################################
 #this is the generic summary function for spline.correlog objects
 ##############################################################################################
-  obj<-object
-	xy <- cbind(obj$real$x.intercept, obj$real$e.intercept, obj$real$y.intercept)
+  	xy <- cbind(object$real$x.intercept, object$real$e.intercept, object$real$y.intercept)
 	dimnames(xy) <- list(c("estimate"), c("x", "e", "y"))
-	yd <- apply(obj$boot$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	yd <- apply(object$boot$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	xd <- apply(obj$boot$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	xd <- apply(object$boot$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
-	ed <- apply(obj$boot$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+	ed <- apply(object$boot$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 		0.75, 0.975, 1), na.rm= TRUE)
 	xyd <- cbind(xd, ed, yd)
 	dimnames(xyd) <- list(c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), c("x", "e", "y"))
-	res <- list(call = obj$call, estimate = xy, quantiles = xyd)
+	res <- list(call = object$call, estimate = xy, quantiles = xyd)
 	res
 }
 
+##############################################################################################
+print.spline.correlog<-function(x, ...){
+##############################################################################################
+cat("This is an object of class spline.correlog produced by the call:\n\n", x$call, "\n\n Use summary() or plot() for inspection,  (or print.default() to see all the gory details).")}
+
 
 ##############################################################################################
-correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE, quiet = FALSE){
+correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE, quiet = TRUE){
 ##############################################################################################
 #correlog estimates the spatial correlogram (if z is univariate)
 #or the Mantel correlogram (if z is multivariate), or the (uni-/multivariate)
@@ -1598,16 +1544,15 @@ plot.correlog<-function(x, ...){
 #this is the generic plot function for correlog objects
 #sigificant values are represented by filled cirles
 ##############################################################################################
-  obj<-x
-	plot(obj$mean.of.class, obj$correlation, ylab='correlation', xlab='distance (mean-of-class)')
-	lines(obj$mean.of.class, obj$correlation)
-	if(!is.null(obj$p)){
-       points(obj$mean.of.class[obj$p<0.025], obj$correlation[obj$p<0.025], pch=21, bg="black")
+	plot(x$mean.of.class, x$correlation, ylab='correlation', xlab='distance (mean-of-class)')
+	lines(x$mean.of.class, x$correlation)
+	if(!is.null(x$p)){
+       points(x$mean.of.class[x$p<0.025], x$correlation[x$p<0.025], pch=21, bg="black")
        }
 	title("Correlogram")
 }
 ##############################################################################################
-correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet = FALSE){
+correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet = TRUE){
 ##############################################################################################
 #correlog.nc estimates the noncentred correlogram
 #and cross-correlogram. Bjornstad et al. (1999; Trends in Ecology and
@@ -1763,7 +1708,7 @@ if(is.null(w)){
 }
 
 ##############################################################################################
-mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE, quiet = FALSE){
+mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE, quiet = TRUE){
 ##############################################################################################
 #mSynch is a function to estimate the mean (cross-)correlation with bootstrapp CI for one
 #or two panels of spatiotemporal data
@@ -1886,7 +1831,7 @@ if(resamp != 0) {
 
 
 ##############################################################################################
-mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE, quiet = FALSE){
+mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE, quiet = TRUE){
 ##############################################################################################
 #mantel.test is a function to calculate the mantel test for two matrices,
 #or for {x, y, z} data.
@@ -1907,13 +1852,9 @@ mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, l
 #correlation    is the value for the Mantel correlation
 #p              is the p-value
 #######################################################################################
-	if(is.null(M1)&is.null(x)){cat("ERROR! you must provide either distance/similarity\nmatrices OR vectors of x-/y-coordinates and observations")
-			break
+	if(is.null(M1)&is.null(x)){
+			stop("you must provide either distance/similarity\nmatrices OR vectors of x-/y-coordinates and observations")
 			}
-	if(!is.null(M1)&!is.null(x)){cat("ERROR! you must provide either distance/similarity\nmatrices OR vectors of x-/y-coordinates and observations")
-			break
-			}
-
 if(!is.null(x)){
 	multivar <- !is.null(dim(z))		#test whether z is univariate or multivariate
 
@@ -1994,7 +1935,7 @@ else{	#if x is null
 }
 
 ##############################################################################################
-partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson', quiet = FALSE){
+partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson', quiet = TRUE){
 ##############################################################################################
 #partial.mantel.tets is a simple function to calculate Mantel and partial mantel tests for three matrices,
 #the partial mantel test is calculated to test for relationships between M1 and M2 (or M3) cotrolling for M3 (M2).
@@ -2076,7 +2017,7 @@ return(out)
 }
 
 ##############################################################################################
-lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
+lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = TRUE){
 ##############################################################################################
 #lisa is a function to estimate the local indicators
 #of spatial association.
@@ -2167,17 +2108,15 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = FALSE){
 ##############################################################################################
 plot.lisa<-function(x, neigh.mean=FALSE, add=FALSE, inches=0.2, ...){
 ##############################################################################################
-obj<-x
-
 if(neigh.mean){
-z <- obj$mean
+z <- x$mean
 }
 else{
-  z<-obj$z
+  z<-x$z
 }
 
-x <- obj$coord$x
-y <- obj$coord$y
+x <- x$coord$x
+y <- x$coord$y
 
 if(add==FALSE){
 	plot(x,y,type="n")
@@ -2191,10 +2130,10 @@ z2 <- split(z-mean(z, na.rm=TRUE),z-mean(z, na.rm=TRUE)>0)
 bgc<-rep(0, length(z))
 bgc <- split(bgc,z-mean(z, na.rm=TRUE)>0)
 
-   if(!is.null(obj$p)){
+   if(!is.null(x$p)){
      bgc<-rep(0, length(z))
-     bgc<-ifelse(obj$p<0.025, 1, 0)
-     bgc[obj$p<0.025 & z-mean(z, na.rm=TRUE)>0]<-2
+     bgc<-ifelse(x$p<0.025, 1, 0)
+     bgc[x$p<0.025 & z-mean(z, na.rm=TRUE)>0]<-2
      bgc <- split(bgc,z-mean(z, na.rm=TRUE)>0)
    }
 
@@ -2208,7 +2147,7 @@ if(!is.null(length(z2[[1]][sel[[2]]]))){
 
 
 ##############################################################################################
-lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = FALSE){
+lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = TRUE){
 ##############################################################################################
 
   if(is.null(dim(z))){
@@ -2281,13 +2220,12 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
 ##############################################################################################
 plot.lisa.nc<-function(x, ctr = FALSE, add=FALSE, inches=0.2, ...){
 ##############################################################################################
-obj<-x
 if(ctr){
-	z <- obj$correlation-mean(obj$correlation, na.rm= TRUE)}
-else{z <- obj$correlation}
+	z <- x$correlation-mean(x$correlation, na.rm= TRUE)}
+else{z <- x$correlation}
 
-x <- obj$coord$x
-y <- obj$coord$y
+x <- x$coord$x
+y <- x$coord$y
 
 if(add==FALSE){
 	plot(x,y,type="n")
@@ -2301,10 +2239,10 @@ z2 <- split(z,z>0)
 bgc<-rep(0, length(z))
 bgc <- split(bgc,z>0)
 
-   if(!is.null(obj$p)){
+   if(!is.null(x$p)){
      bgc<-rep(0, length(z))
-     bgc<-ifelse(obj$p<0.025, 1, 0)
-     bgc[obj$p<0.025 & z >0]<-2
+     bgc<-ifelse(x$p<0.025, 1, 0)
+     bgc[x$p<0.025 & z >0]<-2
      bgc <- split(bgc,z>0)
    }
 
@@ -2410,7 +2348,7 @@ gcdist <- function(x1, y1, x2, y2) {
 
 ##############################################################################################
 Sncf2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, quiet = FALSE,
+  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, quiet = TRUE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #Sncf2D is the function to estimate the anisotropic nonparametric covariance function 
@@ -2857,55 +2795,38 @@ for(d in 1:length(ang)){
 	res
 }
 
+##############################################################################################
+print.Sncf2D=function(x, ...){
+##############################################################################################
+cat("This is an object of class Sncf2D produced by the call:\n\n", x$call, "\n\n Use summary() or plot() for inspection,  (or print.default() to see all the gory details).")}
 
 ##############################################################################################
-plot.Sncf2D <- function(x, xmax = 0, text = TRUE, detail = FALSE, ...){
+plot.Sncf2D <- function(x, xmax = 0, ylim=c(-1,1), detail = FALSE, ...){
 ##############################################################################################
 #this is the generic plot function for Sncf2D objects
 ##############################################################################################
-  obj<-x
-	L<-length(obj$angle)
+	L<-length(x$angle)
 
-	xmax <- ifelse(xmax == 0, obj$max.distance, xmax)
-	plot(obj$real[[1]]$predict$x, obj$real[[1]]$predict$y, xlim = c(-xmax, xmax), ylim
-			 = c(-1, 1), type = "n", xlab = "", ylab = "")
-	lines(c(-max(obj$real[[1]]$predict$x), max(obj$real[[1]]$predict$x)), c(0, 0))
-	lines(c(-max(obj$real[[1]]$predict$x), max(obj$real[[1]]$predict$x)), c(obj$real$cbar, obj$real$cbar))
-
-	for(i in 1:L){
-		cbar <- round(obj$real$cbar, 2)
-		if(!is.null(obj$boot[[1]]$boot.summary)){
-			rul <- round(quantile(obj$boot[[i]]$boot.summary$cbar[,1], probs = c(0.025, 0.975), na.rm= TRUE), 2)
-		}
-		lines(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y)
-
-	}
+	xmax <- ifelse(xmax == 0, x$max.distance, xmax)
+	plot(x$real[[1]]$predict$x, x$real[[1]]$predict$y, xlim = c(-xmax, xmax), ylim
+			 = ylim, type = "n", xlab = "", ylab = "")
+	lines(c(-max(x$real[[1]]$predict$x), max(x$real[[1]]$predict$x)), c(0, 0))
+	lines(c(-max(x$real[[1]]$predict$x), max(x$real[[1]]$predict$x)), c(x$real$cbar, x$real$cbar))
 
 	if(detail){
 	
 	par(mfrow=c(ceiling(sqrt(L)),ceiling(sqrt(L))))
 
 	for(i in 1:L){
-		x <- round(obj$real[[i]]$x.intercept, 1)
-		ri <- round(obj$real[[i]]$cbar.intercept, 1)
-		y <- round(obj$real[[i]]$y, 2)
-		if(!is.null(obj$boot[[i]]$boot.summary)){
-			xul <- round(quantile(obj$boot[[i]]$boot.summary$x.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
-			cbarul <- round(quantile(obj$boot[[i]]$boot.summary$cbar.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 1)
-			yul <- round(quantile(obj$boot[[i]]$boot.summary$y.intercept, probs = c(0.025, 0.975), na.rm= TRUE), 2)
-		}
+		plot(x$real[[i]]$predict$x, x$real[[i]]$predict$y, xlim = c(-xmax, xmax), ylim
+			 = ylim, type = "l", xlab = "Distance", ylab = "Correlation")
 
-		plot(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y, xlim = c(-xmax, xmax), ylim
-			 = c(-1, 1), type = "l", xlab = "Distance", ylab = "Correlation")
-
-	
-	lines(obj$real[[i]]$predict$x, obj$real[[i]]$predict$y)
-	lines(c(-max(obj$real[[i]]$predict$x), max(obj$real[[i]]$predict$x)), c(0, 0))
-	lines(c(-max(obj$real[[i]]$predict$x), max(obj$real[[i]]$predict$x)), c(cbar, cbar))
-
-	if(!is.null(obj$boot[[i]]$boot.summary)){
-		lines(obj$boot[[i]]$boot.summary$predict$x, obj$boot[[i]]$boot.summary$predict$y["0.025", ])
-		lines(obj$boot[[i]]$boot.summary$predict$x, obj$boot[[i]]$boot.summary$predict$y["0.975", ])}
+	if(!is.null(x$boot[[i]]$boot.summary)){
+ polygon(c(x$boot[[i]]$boot.summary$predicted$x,rev(x$boot[[i]]$boot.summary$predicted$x)), c(x$boot[[i]]$boot.summary$predicted$y["0.025",], rev(x$boot[[i]]$boot.summary$predicted$y["0.975",])), col=gray(0.8), lty=0)
+         }	
+	lines(x$real[[i]]$predict$x, x$real[[i]]$predict$y)
+	lines(c(-max(x$real[[i]]$predict$x), max(x$real[[i]]$predict$x)), c(0, 0))
+	lines(c(-max(x$real[[i]]$predict$x), max(x$real[[i]]$predict$x)), c(x$real$cbar, x$real$cbar))
 	}
 	}
 }
@@ -2915,84 +2836,83 @@ summary.Sncf2D<-function(object, ...){
 ##############################################################################################
 #this is the generic summary function for Sncf objects
 ##############################################################################################
-  obj<-object
-	L<-length(obj$angle)
+	L<-length(object$angle)
 
 	xy <- matrix(NA, ncol=L, nrow=4)
 	dimnames(xy) <- list(c("x", "e", "cbar", "y"),
-		unlist(lapply(obj$angle, as.name)))
-	xyd <- lapply(unlist(lapply(obj$angle, as.name)),as.null)
-	names(xyd)<-unlist(lapply(obj$angle, as.name))
+		unlist(lapply(object$angle, as.name)))
+	xyd <- lapply(unlist(lapply(object$angle, as.name)),as.null)
+	names(xyd)<-unlist(lapply(object$angle, as.name))
 
 	for(i in 1:L){
 		xyd[[i]]<-matrix(NA, ncol=7, nrow=4)
 	}
 
-	cbar <- round(obj$real$cbar, 2)
+	cbar <- round(object$real$cbar, 2)
 
 	for(i in 1:L){
-		xy[1,i] <- round(obj$real[[i]]$x.intercept, 2)
-		xy[2,i] <- round(obj$real[[i]]$e.intercept, 2)
-		xy[3,i] <- round(obj$real[[i]]$cbar.intercept, 2)
-		xy[4,i] <- round(obj$real[[i]]$y.intercept, 2)
-		if(!is.null(obj$boot[[i]]$boot.summary)){
-		yd <- apply(obj$boot[[i]]$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+		xy[1,i] <- round(object$real[[i]]$x.intercept, 2)
+		xy[2,i] <- round(object$real[[i]]$e.intercept, 2)
+		xy[3,i] <- round(object$real[[i]]$cbar.intercept, 2)
+		xy[4,i] <- round(object$real[[i]]$y.intercept, 2)
+		if(!is.null(object$boot[[i]]$boot.summary)){
+		yd <- apply(object$boot[[i]]$boot.summary$y.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 			0.75, 0.975, 1), na.rm= TRUE)
-		xd <- apply(obj$boot[[i]]$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+		xd <- apply(object$boot[[i]]$boot.summary$x.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 			0.75, 0.975, 1), na.rm= TRUE)
-		ed <- apply(obj$boot[[i]]$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
+		ed <- apply(object$boot[[i]]$boot.summary$e.intercept, 2, quantile, probs = c(0, 0.025, 0.25, 0.5,
 			0.75, 0.975, 1), na.rm= TRUE)
-		synchd <- quantile(obj$boot[[i]]$boot.summary$cbar[,1], probs = c(0, 0.025, 0.25, 0.5,
+		synchd <- quantile(object$boot[[i]]$boot.summary$cbar[,1], probs = c(0, 0.025, 0.25, 0.5,
 			0.75, 0.975, 1), na.rm= TRUE)
-		cbard <- quantile(obj$boot[[i]]$boot.summary$cbar.intercept[,1], probs = c(0, 0.025, 0.25, 0.5,
+		cbard <- quantile(object$boot[[i]]$boot.summary$cbar.intercept[,1], probs = c(0, 0.025, 0.25, 0.5,
 			0.75, 0.975, 1), na.rm= TRUE)
 		xyd[[i]] <- cbind(xd, ed, yd, cbard)
 		dimnames(xyd[[i]]) <- list(c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), c("x", "e", "y", "cbar"))}
-		if(is.null(obj$boot[[i]]$boot.summary)){
+		if(is.null(object$boot[[i]]$boot.summary)){
 			synchd <- NULL
 			xyd <- NULL	
 		}
 	}
-	res <- list(call = obj$call, Regional.synch = obj$real$cbar, Squantile = synchd, estimates = xy, quantiles = xyd)
+	res <- list(call = object$call, Regional.synch = object$real$cbar, Squantile = synchd, estimates = xy, quantiles = xyd)
 	res
 }
 
 
 ##############################################################################################
-cc.offset<-function(obj, xmax=NULL){
+cc.offset<-function(object, xmax=NULL){
 ##############################################################################################
 #calculates offsets in Sncf2D cross-correltions
 ##############################################################################################
 
-	L<-length(obj$angle)
+	L<-length(object$angle)
 
 	if(is.null(xmax)){
-		xmax<-obj$max.distance
+		xmax<-object$max.distance
 	}
 
-	if(is.null(obj$boot[[1]]$boot.summary)){
+	if(is.null(object$boot[[1]]$boot.summary)){
 		xy <- matrix(NA, ncol=3, nrow=L)
-		dimnames(xy) <- list(unlist(lapply(obj$angle, as.name)),
+		dimnames(xy) <- list(unlist(lapply(object$angle, as.name)),
 			c("angle", "distance", "correlation"))
 	}
-	if(!is.null(obj$boot[[1]]$boot.summary)){
+	if(!is.null(object$boot[[1]]$boot.summary)){
 		xy <- matrix(NA, ncol=7, nrow=L)
-		dimnames(xy) <- list(unlist(lapply(obj$angle, as.name)),
+		dimnames(xy) <- list(unlist(lapply(object$angle, as.name)),
 			c("angle", "distance", "correlation", "dL", "dU", "cL", "cU"))
 	}
 
-	xy[,1]<-obj$angle
+	xy[,1]<-object$angle
 
 	for(i in 1:L){
-		sel<-obj$real[[i]]$predict$x>=0&obj$real[[i]]$predict$x<xmax
-		D<-obj$real[[i]]$predict$x[sel]
-		D2<-obj$real[[i]]$predict$y[sel]
+		sel<-object$real[[i]]$predict$x>=0&object$real[[i]]$predict$x<xmax
+		D<-object$real[[i]]$predict$x[sel]
+		D2<-object$real[[i]]$predict$y[sel]
 		xy[i,2]<-na.omit(D[D2==max(D2, na.rm= TRUE)])[1]
 		xy[i,3]<-na.omit(D2[D2==max(D2, na.rm= TRUE)])[1]
-		if(!is.null(obj$boot[[i]]$boot.summary)){
-			xy[i,4:5]<-range(obj$boot[[i]]$boot.summary$predict$x[sel][(obj$boot[[i]]$boot.summary$predict$y["0.975", sel]-max(D2, na.rm= TRUE))>0], na.rm= TRUE)
-			xy[i, 7]<-obj$boot[[i]]$boot.summary$predict$y["0.975", sel][rev(order(na.omit(D2)))[1]]
-			xy[i, 6]<-obj$boot[[i]]$boot.summary$predict$y["0.025", sel][rev(order(na.omit(D2)))[1]]
+		if(!is.null(object$boot[[i]]$boot.summary)){
+			xy[i,4:5]<-range(object$boot[[i]]$boot.summary$predict$x[sel][(object$boot[[i]]$boot.summary$predict$y["0.975", sel]-max(D2, na.rm= TRUE))>0], na.rm= TRUE)
+			xy[i, 7]<-object$boot[[i]]$boot.summary$predict$y["0.975", sel][rev(order(na.omit(D2)))[1]]
+			xy[i, 6]<-object$boot[[i]]$boot.summary$predict$y["0.025", sel][rev(order(na.omit(D2)))[1]]
 		}
 	}
 	class(xy)<-"cc.offset"
@@ -3000,26 +2920,26 @@ cc.offset<-function(obj, xmax=NULL){
 }
 
 ##############################################################################################
-plot.cc.offset <- function(x, xmax = 0, ...){
+plot.cc.offset <- function(x, xmax = 0, xlim=NULL, ylim=NULL, ...){
 ##############################################################################################
 #this is the generic plot function for cc.offset objects
 ##############################################################################################
-  obj<-x
-	theta <- 2*pi*obj[,"angle"]/360
-
-	x <- obj[,"distance"]*sin(theta)
-	y <- obj[,"distance"]*cos(theta)
-	#tmp<-rep(0, length(theta))
-	tmp<-obj[,"correlation"]
-	symbols(x,y, xlim = c(-max(abs(c(x,y))), max(abs(c(x,y)))), 
-		ylim = c(-max(abs(c(x,y))), max(abs(c(x,y)))), circles= ifelse(tmp>0,tmp,0), inches=.1)
-	lines(c(0,0), c(-max(abs(c(x,y))), max(abs(c(x,y)))))
-	lines(c(-max(abs(c(x,y))), max(abs(c(x,y)))), c(0,0))
+	theta <- 2*pi*x[,"angle"]/360
+	x2 <- x[,"distance"]*sin(theta)
+	y <- x[,"distance"]*cos(theta)
+	xl=xlim
+	yl=ylim
+	if(is.null(xlim)) xl = c(-max(abs(c(x2,y))), max(abs(c(x2,y))))
+	if(is.null(ylim)) yl = c(-max(abs(c(x2,y))), max(abs(c(x2,y))))
+	tmp<-x[,"correlation"]
+	symbols(x2,y, circles= ifelse(tmp>0,tmp,0), inches=.1, xlim=xl, ylim=yl, xlab="", ylab="")
+	abline(c(0,0), yl)
+	lines(xl, c(0,0))
 }
 
 ##############################################################################################
 spline.correlog.2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, quiet = FALSE,
+  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, quiet = TRUE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #spline.correlog.2D is the function to estimate the anisotropic nonparametric covariance function
@@ -3460,7 +3380,7 @@ for(d in 1:length(ang)){
 }
 
 ##############################################################################################
-mantel.correlog<-function(dmat, zmat, wmat=NULL, increment, resamp = 1000, quiet=FALSE){
+mantel.correlog<-function(dmat, zmat, wmat=NULL, increment, resamp = 1000, quiet=TRUE){
 ##############################################################################################
 
 if(is.null(wmat)){

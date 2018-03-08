@@ -1,3 +1,8 @@
+1.1-8: Plotting functions for Spline.correlogs and Sncf changed 
+       Default for 'quiet' switched to TRUE
+       print.Sncf and print.spline.correlog added.
+       Bit of code tidying and CRAN compatibility fixing.
+
 1.1-7: Small changes to plot.lisa.nc, plot.lisa and spatial.plot.
        Bugs in correlog and correlog.nc when latlon=TRUE fixed
 

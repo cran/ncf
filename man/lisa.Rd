@@ -8,7 +8,7 @@
 }
 
 \usage{
-    lisa(x, y, z, neigh, resamp, latlon=FALSE, quiet = FALSE)
+    lisa(x, y, z, neigh, resamp, latlon=FALSE, quiet = TRUE)
     }
 
 \arguments{

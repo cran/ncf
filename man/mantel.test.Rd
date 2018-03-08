@@ -8,7 +8,7 @@
 
 \usage{
 mantel.test(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL,
-    resamp = 1000, latlon = FALSE, quiet = FALSE)
+    resamp = 1000, latlon = FALSE, quiet = TRUE)
 }
 
 \arguments{

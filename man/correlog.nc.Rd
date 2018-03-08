@@ -10,7 +10,7 @@
 
 \usage{
     correlog.nc(x, y, z, w = NULL, increment, resamp = 1000, 
-    na.rm = FALSE, latlon=FALSE, quiet = FALSE)
+    na.rm = FALSE, latlon=FALSE, quiet = TRUE)
     }
 
 \arguments{

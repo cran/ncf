@@ -9,7 +9,7 @@
 
 \usage{
     lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp=1000, 
-    latlon = FALSE, quiet = FALSE)
+    latlon = FALSE, quiet = TRUE)
     }
 
 \arguments{

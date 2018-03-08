@@ -6,10 +6,10 @@
 }
 
 \usage{
-    cc.offset(obj, xmax)
+    cc.offset(object, xmax)
 }
 \arguments{
-  \item{obj}{an object of class "Sncf2D", usually, as a 
+  \item{object}{an object of class "Sncf2D", usually, as a 
   result of a call to \code{Sncf2D} or \code{spline.correlog.2D}.}
   \item{xmax}{The maximum distance to 
   consider (default is no upper limit).}

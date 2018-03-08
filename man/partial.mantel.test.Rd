@@ -9,7 +9,7 @@
 
 \usage{
 partial.mantel.test(M1, M2, M3, resamp = 1000, 
-method = "pearson", quiet = FALSE)
+method = "pearson", quiet = TRUE)
 }
 
 \arguments{

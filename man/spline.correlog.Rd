@@ -11,7 +11,7 @@
 spline.correlog(x, y, z, w = NULL, df = NULL, type = "boot", 
 resamp = 1000, npoints = 300, save = FALSE, filter = FALSE, 
 fw = 0, max.it = 25, xmax = FALSE, latlon = FALSE,
- na.rm = FALSE, quiet = FALSE)
+ na.rm = FALSE, quiet = TRUE)
 }
 
 \arguments{

@@ -6,7 +6,7 @@
 }
 
 \usage{
-    \method{plot}{Sncf.cov}(x, xmax = 0, text = TRUE, \dots)
+    \method{plot}{Sncf.cov}(x, xmax = 0, \dots)
 }
 \arguments{
   \item{x}{an object of class "Sncf.cov", usually,
@@ -14,10 +14,6 @@
   \item{xmax}{The maximal distance to be plotted on the
   x-axis. If set to zero the maximum distance in the data
   will be used.}
-  \item{text}{if TRUE a summary of the regional average
-  correlation makes the plot title; the y-label summarizes
-  the y-intercept; the x-label summarizes the x-intercept
-  and the cbar-intercept (denoted "r:").}
   \item{\dots}{other arguments}
 }
 

@@ -10,7 +10,7 @@
 \usage{
 Sncf(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000, 
 npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it = 25, 
-xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE, quiet = FALSE)
+xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE, quiet = TRUE)
 }
 
 \arguments{
