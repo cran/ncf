@@ -9,7 +9,7 @@
 
 \usage{
 correlog(x, y, z, w = NULL, increment, resamp = 1000, 
-latlon = FALSE, na.rm = FALSE, quiet = TRUE)
+latlon = FALSE, na.rm = FALSE, quiet = FALSE)
 }
 
 \arguments{

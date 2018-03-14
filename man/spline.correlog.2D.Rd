@@ -15,7 +15,7 @@
 \usage{
 spline.correlog.2D(x, y, z, w = NULL, df = NULL, type = "boot", 
 resamp = 1000, npoints = 300, save = FALSE, max.it = 25, xmax = FALSE, 
-na.rm = FALSE, jitter = FALSE, quiet = TRUE,
+na.rm = FALSE, jitter = FALSE, quiet = FALSE,
 angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5))
     }
 

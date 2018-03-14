@@ -1,12 +1,7 @@
 ##############################################################################################
 Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE,
-	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE, quiet=TRUE){
+	filter = FALSE, fw = 0, max.it=25, xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ=FALSE, quiet=FALSE){
 ##############################################################################################
-#the following sets up the output:
-	real <- list(cbar = NA, x.intercept = NA, e.intercept = NA, y.intercept = NA, cbar.intercept = NA,
-		predicted = list(x = matrix(NA, nrow = 1, ncol = npoints),
-		y = matrix(NA, nrow = 1, ncol = npoints)))
-
 	NAO <- FALSE
 
 #check for missing values
@@ -21,27 +16,20 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	}
 
 	if(is.null(w)){
-	#This generates the moran distances
-		#the odd adding of zero is just to ensure that all vectors
-		#are treated as numeric
+	#This generates correlations
 		n <- dim(z)[1]
 		p <- dim(z)[2]
 		z <- as.matrix(z)+0
-
 		moran <- cor2(t(z), circ=circ)
 	}
 
 	else {
-	#This generates the moran distances for cross-correlation
-		#the odd adding of zero is just to ensure that all vectors
-		#are treated as numeric
+	#This generates cross-correlations
 		n <- dim(z)[1]
 		p <- dim(z)[2]
 		z <- as.matrix(z)+0
 		w <- as.matrix(w)+0
-
 		moran <- cor2(t(z), t(w), circ=circ)
-
 	}
 
 	if(is.null(df)){
@@ -52,19 +40,14 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	#then generating geographic distances
 	if(latlon){
                 #these are geographic distances from lat-lon coordinates
-                xdist <- matrix(0, nrow = n, ncol = n)
-                for(i in 1:(n-1)) {
-                        for(j in (i+1):n) {
-                                xdist[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                xdist[i, j] <- xdist[j, i]
-                        }
-                }
+                xdist <- gcdist(x,y)
         }
 
 	else{
 		#these are geographic distances from euclidian coordinates
 		xdist <- sqrt(outer(x,x, "-")^2+outer(y,y,"-")^2)
 	}
+
 	maxdist <- ifelse(!xmax, max(na.omit(xdist)), xmax)
 
 #The spline function
@@ -84,132 +67,14 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	v <- v[u <= maxdist]
 	u <- u[u <= maxdist]
 
-	real$cbar <- mean(v, na.rm= TRUE)
-	sobj <- smooth.spline(u, v, df = df)
-
-	xpoints <- seq(0, maxdist, length = npoints)
-
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	if(is.null(w)){
-		real$y.intercept <- lx$y[1]
-	}
-
-	else {
-    if(is.finite(mean(diag(moran), na.rm= TRUE))){
-		real$y.intercept <- mean(diag(moran), na.rm= TRUE)
-		}
-		else {
-    real$y.intercept <- lx$y[1]
-    }
-	}
-
-	real$predicted <- list(x = xpoints, y = lx$y)
-	konst<-1
-
-	if(real$y.intercept<0){
-		lx$y <- -lx$y
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-
-#newtons method to find the x-intercept
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$x.intercept <- konst*pos
-
-
-#Now find the e-folding scale
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$e.intercept <- pos
-
-#Now find the cbar-folding scale
-	sobj <- smooth.spline(u, v - real$cbar, df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the cbar-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$cbar.intercept <- pos
+xpoints=seq(0, maxdist, length=npoints)
+out=gather(u=u,v=v,w=w, moran=moran, df=df, xpoints=xpoints, filter=filter, fw=fw)
 #End of spline fit
+real <- list(cbar = out$cbar, x.intercept = out$xint, e.intercept = out$eint, y.intercept = out$yint, cbar.intercept = out$cint,
+		predicted = list(x = matrix(out$x, nrow = 1),
+		y = matrix(out$y, nrow = 1)))
 
+###
 	boot <- list(NULL)
 	boot$boot.summary <- list(NULL)
 	if(resamp != 0) {
@@ -220,14 +85,15 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 		boot$boot.summary$cbar.intercept <- matrix(NA, nrow = resamp, ncol = 1)
 		boot$boot.summary$cbar <- matrix(NA, nrow = resamp, ncol = 1)
 		predicted <- list(x = matrix(NA, nrow = 1, ncol = npoints), y = matrix(NA, nrow = resamp, ncol = npoints))
-		predicted$x[1,] <- xpoints
 		type <- charmatch(type, c("boot", "perm"),
 			nomatch = NA)
 		if(is.na(type))
 			stop("method should be \"boot\", or \"perm\"")
-
 		for(i in 1:resamp) {
-		if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn))	{
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -264,131 +130,16 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 		v <- v[u <= maxdist]
 		u <- u[u <= maxdist]
 
-		boot$boot.summary$cbar[i,1] <- mean(v, na.rm= TRUE)
-		sobj <- smooth.spline(u, v, df = df)
-		lx <- predict(sobj, x = xpoints)
+		out=gather(u=u,v=v,w=w, moran=moranb, df=df, xpoints=xpoints, filter=filter, fw=fw)
+		
+		boot$boot.summary$cbar[i,1] =out$cbar
+		boot$boot.summary$y.intercept[i,1] <- out$yint
+		boot$boot.summary$x.intercept[i,1] <- out$xint
+		boot$boot.summary$e.intercept[i,1] <- out$eint
+		boot$boot.summary$cbar.intercept[i,1] <- out$cint
+		predicted$x[1,] <- out$x
+		predicted$y[i,] <- out$y
 
-		if(filter == TRUE) {
-			if(fw > 0){ lx$y[xpoints > fw] <- 0}
-			lx$y <- ff.filter(lx$y)
-		}
-
-		if(is.null(w)){
-			boot$boot.summary$y.intercept[i,1] <- lx$y[1]
-		}
-
-		else {
-      if(is.finite(mean(diag(moran[trekky, trekky]), na.rm= TRUE))){
-			boot$boot.summary$y.intercept[i,1] <- mean(diag(moran[trekky, trekky]), na.rm= TRUE)
-   		}
-		  else {
-		  	boot$boot.summary$y.intercept[i,1] <- lx$y[1]
-      }
-	  }
-
-		predicted$y[i,] <- lx$y
-
-		konst<-1
-
-		if(boot$boot.summary$y.intercept[i,1]<0){
-			lx$y <- -lx$y
-			konst <- -1
-		}
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-	#newtons method to find the x-intercept
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6){
-				break
-			}
-			pos <- neg
-		}
-
-		boot$boot.summary$x.intercept[i,1] <- konst*pos
-
-	#Now find the e-folding scale
-
-		sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-		lx <- predict(sobj, x = xpoints)
-
-		if(filter == TRUE) {
-			if(fw > 0){ lx$y[xpoints > fw] <- 0}
-			lx$y <- ff.filter(lx$y)
-		}
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-		#newtons method to find the e-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-
-	boot$boot.summary$e.intercept[i,1] <- pos
-
-	#Now find the cbar-folding scale
-
-		sobj <- smooth.spline(u, v - real$cbar, df = df)
-		lx <- predict(sobj, x = xpoints)
-
-		if(filter == TRUE) {
-			if(fw > 0){ lx$y[xpoints > fw] <- 0}
-			lx$y <- ff.filter(lx$y)
-		}
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-	#newtons method to find the cbar-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-		boot$boot.summary$cbar.intercept[i,1] <- pos
 	}
 #end of bootstrap loop!
 
@@ -416,6 +167,48 @@ Sncf<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints
 	res <- list(real = real, boot = boot, max.distance = maxdist, call=deparse(match.call()))
 	class(res) <- "Sncf"
 	res
+}
+
+gather=function(u,v,w, moran, df, xpoints, filter, fw){
+cbar <- mean(v, na.rm= TRUE)
+sobj=smooth.spline(u,v, df=df)
+x <- xpoints
+y <- predict(sobj, x = x)$y
+if(filter == TRUE) {
+		if(fw > 0){y[x > fw] <- 0}
+		y <- ff.filter(y)
+	}
+#if(is.null(w)){
+	yint <- y[1]
+#	}
+#else {
+#	 yint <- mean(diag(moran), na.rm= TRUE)
+#	# yint <- ifelse(is.finite(mean(diag(moran), na.rm= TRUE)), mean(diag(moran), na.rm= TRUE),  y[1])
+#	}
+x2=x[x>=0]
+y2=y[x>=0]
+konst=ifelse(y2[1]>0,1,-1)
+xint=eint=cint=NA
+wh=(1:length(x2))[y2<0][1]
+int=c(x2[wh],x2[wh-1])
+if(length(int)==2 & all(is.finite(int))){
+#xi=nleqslv(0, fn=function(x) predict(sobj, x)$y)$x
+xi=uniroot(f=function(x) predict(sobj, x)$y, interval=int)$root
+xint=c(0,xi*konst, NA)[findInterval(xi, range(xpoints))+1]
+}
+wh=(1:length(x2))[(y2-1/exp(1))<0][1]
+int=c(x2[wh],x2[wh-1])
+if(length(int)==2 & all(is.finite(int))){
+ei=uniroot(f=function(x) {predict(sobj, x)$y-1/exp(1)}, interval=int)$root
+eint=c(0,ei, NA)[findInterval(ei, range(xpoints))+1]
+}
+wh=(1:length(x2))[(y2-cbar)<0][1]
+int=c(x2[wh],x2[wh-1])
+if(length(int)==2 & all(is.finite(int))){
+ci=uniroot(f=function(x) {predict(sobj, x)$y-cbar}, interval=int)$root
+cint=c(0,ci, NA)[findInterval(ci, range(xpoints))+1]
+}
+list(x=x, y=y, yint=yint, cbar=cbar, xint=xint, eint=eint, cint=cint)
 }
 
 ##############################################################################################
@@ -467,72 +260,18 @@ summary.Sncf<-function(object, ...){
 	xyd <- NULL	
 	}
 	res <- list(call = object$call, Regional.synch = object$real$cbar, Squantile = synchd, estimates = xy, quantiles = xyd)
-	res
+	resquiet=FALSE
 }
 
 ##############################################################################################
 Sncf.srf <- function(x, y, z, w=NULL, avg=NULL, avg2=NULL, corr= TRUE, df = NULL, type = "boot", resamp = 0, 
-	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE, quiet = TRUE){
+	npoints = 300, save = FALSE, filter = FALSE, fw = 0, max.it=25, xmax = FALSE, jitter = FALSE, quiet=FALSE){
 ##############################################################################################
 #Sncf.srf is the function to estimate the nonparametric covariance function for a 
 #stationary random field (expectation and variance identical). The function uses a
 #smoothing spline as an equivalent kernel) as discussed in 
 #Bjornstad et al. (1999; Trends in Ecology and Evolution 14:427-431)
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         matrix of dimension n x p representing p (=>1) observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate 
-#	      the spatial cross-correlation function
-#
-#avg	   Supplies the marginal expectation of the Markov random field; if TRUE, the 
-#             sample mean (across the markovian field) is used
-#avg2	   Supplies the marginal expectation of the Markov random field for (optional 
-#	      species 2; if TRUE, the sample mean (across the markovian field) is used
-#corr      if TRUE, the covariance function is standardized by the marginal variance
-#             (across the markovian field) to return a correlation function (alternatively
-#             the covariance function is returned) 
-#df        degrees of freedom for the spline. The default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a 
-#             null distribution for the estimator under randomization
-#resamp    is the number of resamples for the bootstrap or the null distribution
-#npoints   is the number of points at which to save the value for the spline function (and
-#             confidence envelope / null distribution)
-#save      if True, the whole matrix of output from the resampling is saved (an resamp x npoints
-#             dimensional matrix)
-#filter    if True, the Fourier filter method of Hall and coworkers (Probability Theory and
-#             Related Fields, 1994, 99:399-424; Annals of Statistics, 1994, 22:	2115-2134) is
-#             applied to ensure positive semidefiniteness of the estimator. 
-#             Be warned: more work may be needed on this. 
-#fw         if filter is True, it may be useful to truncate the function at some distance
-#             w sets the truncation distance. when set to zero no truncation is done.
-#xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
-#	      than xmax is omitted
-#jitter	   if TRUE, jitters distance matrix, to avoid problems associated with
-#	      data on regular grids
-#
-#VALUE
-#an object of class ncf is returned consisted of the following components:
-#real      $predicted$x is the x coordinates for the fitted covariance function
-#          $predcited$y is the y values for the covariance function
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is 
-#	       initially negative, the distance calculated is negative
-#          $y.intercept is the extrapolated value at x=0
-#	   $e.intercept is the lowest value at which the function is <= 1/e
-#          $cbar.intercept is distance at which regional average sychrony is reach
-#          $cbar is the regional average sychrony
-#boot      gives the analogous output from the bootstrap or randomization resampling
-#boot$summary  gives the full vector of output for the x.intercept, y.intercept,
-#	   e.intercept, and the rbar
-#              and a quantile summary for the resampling distribution
-#boot$boot     if save= TRUE, the full raw matrices from the resampling is saved
 ############################################################################################
-
-#the following sets up the output:
-	real <- list(cbar = NA, x.intercept = NA, e.intercept = NA, y.intercept = NA, cbar.intercept = NA, predicted = list(x
-		 = matrix(NA, nrow = 1, ncol = npoints), y = matrix(NA, nrow = 1, ncol = 
-		npoints)))
 
 	p <- dim(z)[2]
 	n <- dim(z)[1]
@@ -595,129 +334,15 @@ Sncf.srf <- function(x, y, z, w=NULL, avg=NULL, avg2=NULL, corr= TRUE, df = NULL
 	v <- moran[triang]
 	v <- v[u<=maxdist]	
 	u <- u[u<=maxdist]
-	real$cbar <- mean(v, na.rm= TRUE)
-	sobj <- smooth.spline(u, v, df = df)
 
-	xpoints <- seq(0, maxdist, length = npoints)
-
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	if(is.null(w)){
-		real$y.intercept <- lx$y[1]
-	}
-	
-	else {
-		real$y.intercept <- mean(diag(moran), na.rm= TRUE)
-	}
-
-	real$predicted <- list(x = xpoints, y = lx$y)
-	konst<-1
-
-	if(real$y.intercept<0){
-		lx$y <- -lx$y
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-
-	#newtons method to find the x-intercept
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$x.intercept <- konst*pos
-
-
-#Now find the e-folding scale
-
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$e.intercept <- pos
-
-#Now find the cbar-folding scale
-
-	sobj <- smooth.spline(u, v - real$cbar, df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the cbar-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$cbar.intercept <- pos
+xpoints=seq(0, maxdist, length=npoints)
+out=gather(u=u,v=v,w=w, moran=moran, df=df, xpoints=xpoints, filter=filter, fw=fw)
 #End of spline fit
+real <- list(cbar = out$cbar, x.intercept = out$xint, e.intercept = out$eint, y.intercept = out$yint, cbar.intercept = out$cint,
+		predicted = list(x = matrix(out$x, nrow = 1),
+		y = matrix(out$y, nrow = 1)))
 
+####
 boot <- list(NULL)
 boot$boot.summary <- list(NULL)
 if(resamp != 0) {
@@ -728,13 +353,16 @@ if(resamp != 0) {
 	boot$boot.summary$cbar.intercept <- matrix(NA, nrow = resamp, ncol = 1)
 	boot$boot.summary$cbar <- matrix(NA, nrow = resamp, ncol = 1)
 	predicted <- list(x = matrix(NA, nrow = 1, ncol = npoints), y = matrix(NA, nrow = resamp, ncol = npoints))
-	predicted$x[1,] <- xpoints
 	type <- charmatch(type, c("boot", "perm"), 
 		nomatch = NA)
 	if(is.na(type))
 		stop("method should be \"boot\", or \"perm\"")
 	for(i in 1:resamp) {
-		if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn))	{
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 	if(type == 1) {
 		trekkx <- sample(1:n, replace = TRUE)
 		trekky <- trekkx
@@ -767,126 +395,17 @@ if(resamp != 0) {
 	v <- moranb
 	v <- v[u<=maxdist]	
 	u <- u[u<=maxdist]
-	boot$boot.summary$cbar[i,1] <- mean(v, na.rm= TRUE)
-	sobj <- smooth.spline(u, v, df = df)
-	lx <- predict(sobj, x = xpoints)
+		out=gather(u=u,v=v,w=w, moran=moranb, df=df, xpoints=xpoints, filter=filter, fw=fw)
+		
+		boot$boot.summary$cbar[i,1] =out$cbar
+		boot$boot.summary$y.intercept[i,1] <- out$yint
+		boot$boot.summary$x.intercept[i,1] <- out$xint
+		boot$boot.summary$e.intercept[i,1] <- out$eint
+		boot$boot.summary$cbar.intercept[i,1] <- out$cint
+		predicted$x[1,] <- out$x
+		predicted$y[i,] <- out$y
 
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
 	}
-
-	if(is.null(w)){
-		boot$boot.summary$y.intercept[i,1] <- lx$y[1]
-	}
-
-	else {
-		boot$boot.summary$y.intercept[i,1] <- mean(diag(moran[trekky, trekky]), na.rm= TRUE)
-	}
-
-	predicted$y[i,] <- lx$y
-
-	konst<-1
-
-	if(boot$boot.summary$y.intercept[i,1]<0){
-		lx$y <- -lx$y
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-
-	#newtons method to find the x-intercept
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-
-	boot$boot.summary$x.intercept[i,1] <- konst*pos
-
-#Now find the e-folding scale
-
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6)
-			break
-		pos <- neg
-	}
-	boot$boot.summary$e.intercept[i,1] <- pos
-
-
-#Now find the cbar-folding scale
-
-	sobj <- smooth.spline(u, v - real$cbar, df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the cbar-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6)
-			break
-		pos <- neg
-	}
-	boot$boot.summary$cbar.intercept[i,1] <- pos
-
-}
 #end of bootstrap loop!
 
 	if(save == TRUE) {
@@ -953,56 +472,13 @@ plot.Sncf.cov <- function(x, xmax = 0, ...){
 
 ##############################################################################################
 spline.correlog<-function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300, save = FALSE, 
-	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE, quiet = TRUE){
+	 filter = FALSE, fw=0, max.it=25, xmax = FALSE, latlon = FALSE, na.rm = FALSE, quiet=FALSE){
 ##############################################################################################
 #spline.correlog is the function to estimate the spline correlogram discussed in 
 #Bjornstad & Falck (2001, Evironmental and Ecological Statistics 8:53-70)
 #Bjornstad et al. (1999, Trends in Ecology and Evolution 14:427-431)
 #Bjornstad et al. (1999, Ecology 80:622-637)
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         vector of length n representing univariate observations or matrix of dimension n x p
-#	      representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate 
-#	      the spatial cross-correlation function
-#
-#df        degrees of freedom for the spline. Default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "perm" to generate a 
-#             null distribution for the estimator under randomization
-#resamp    is the number of resamples for the bootstrap or the null distribution
-#npoints   is the number of points at which to save the value for the spline function (and
-#             confidence envelope / null distribution)
-#save      if True, the whole matrix of output from the resampling is saved (an resamp x npoints
-#             dimensional matrix)
-#filter    if True, the Fourier filter method of Hall and coworkers (Probability Theory and
-#             Related Fields, 1994, 99:399-424; Annals of Statistics, 1994, 22:	2115-2134) is
-#             applied to ensure positive semidefiniteness of the estimator. 
-#             Be warned: more work may be needed on this. 
-#fw         if filter is True, it may be useful to truncate the function at some distance
-#             w sets the truncation distance. when set to zero no truncation is done.
-#xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
-#	      than xmax is omitted
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#	
-#VALUE
-#an object of class spline.correlog is returned consisted of the following components:
-#real      $predicted$x is the x coordinates for the fitted spline correlogram
-#          $predcited$y is the y values for the spline correlogram
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is 
-#	       initially negative, the distance calculated is negative
-#          $y.intercept is the extrapolated value at x=0
-#boot      gives the analogous output from the bootstrap or randomization resampling
-#boot$summary  gives the full vector of output for the x.intercept and y.intercept
-#              and a quantile summary for the resampling distribution
-#boot$boot     if save= TRUE, the full raw matrices from the resampling is saved
 ##############################################################################################
-
-#the following sets up the output:
-real <- list(x.intercept = NA, e.intercept = NA, y.intercept = NA, predicted = list(x = matrix(NA, nrow = 1, 
-	ncol = npoints), y = matrix(NA, nrow = 1, ncol = npoints)))
 
 multivar <- !is.null(dim(z))		#test whether z is univariate or multivariate
 
@@ -1064,15 +540,9 @@ NAO <- FALSE
 
 #then generating geographic distances
 	if(latlon){
-		#these are geographic distances from lat-lon coordinates
-		xdist <- matrix(0, nrow = n, ncol = n)
-		for(i in 1:(n-1)) {
-			for(j in (i+1):n) {
-                                xdist[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                xdist[i, j] <- xdist[j, i]
-			}
-		}
-	}
+                #these are geographic distances from lat-lon coordinates
+                xdist <- gcdist(x,y)
+        }
 
 	else{
 		#these are geographic distances from euclidian coordinates
@@ -1097,87 +567,12 @@ NAO <- FALSE
 
 	v <- v[u<=maxdist]	
 	u <- u[u<=maxdist]
-	
-	
-	sobj <- smooth.spline(u, v, df = df)
 
-	xpoints <- seq(0, maxdist, length = npoints)
-
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	real$y.intercept <- lx$y[1]
-	
-	real$predicted <- list(x = xpoints, y = lx$y)
-	konst<-1
-
-	if(real$y.intercept<0){
-		lx$y <- -lx$y
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-
-        #newtons method to find the x-intercept
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$x.intercept <- konst*pos
-
-
-        #Now find the e-folding scale
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real$e.intercept <- pos
+xpoints=seq(0, maxdist, length=npoints)
+out=gather(u=u,v=v,w=w, moran=moran, df=df, xpoints=xpoints, filter=filter, fw=fw)
+real <- list(x.intercept = out$xint, e.intercept = out$eint, y.intercept = out$yint,
+		predicted = list(x = matrix(out$x, nrow = 1),
+		y = matrix(out$y, nrow = 1)))
 
 #End of spline fit
 boot <- list(NULL)
@@ -1188,13 +583,16 @@ if(resamp != 0) {
 	boot$boot.summary$e.intercept <- matrix(NA, nrow = resamp, ncol = 1)
 	boot$boot.summary$y.intercept <- matrix(NA, nrow = resamp, ncol = 1)
 	predicted <- list(x = matrix(NA, nrow = 1, ncol = npoints), y = matrix(NA, nrow = resamp, ncol = npoints))
-	predicted$x[1,] <- xpoints
 	type <- charmatch(type, c("boot", "perm"), 
 		nomatch = NA)
 	if(is.na(type))
 		stop("method should be \"boot\", or \"perm\"")
 	for(i in 1:resamp) {
-		if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 	if(type == 1) {
 		trekkx <- sample(1:n, replace = TRUE)
 		trekky <- trekkx
@@ -1227,81 +625,14 @@ if(resamp != 0) {
 
 	v <- v[u<=maxdist]	
 	u <- u[u<=maxdist]
-	sobj <- smooth.spline(u, v, df = df)
-	lx <- predict(sobj, x = xpoints)
+	xpoints=seq(0, maxdist, length=npoints)
+	out=gather(u=u,v=v,w=w, moran=moranb, df=df, xpoints=xpoints, filter=filter, fw=fw)
 
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	boot$boot.summary$y.intercept[i,1] <- lx$y[1]
-	predicted$y[i,] <- lx$y
-
-	konst<-1
-
-	if(boot$boot.summary$y.intercept[i,1]<0){
-		lx$y <- -lx$y
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the x-intercept
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	boot$boot.summary$x.intercept[i,1] <- konst*pos
-
-	#Now find the e-folding scale
-
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = xpoints)
-
-	if(filter == TRUE) {
-		if(fw > 0){ lx$y[xpoints > fw] <- 0}
-		lx$y <- ff.filter(lx$y)
-	}
-
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6)
-			break
-		pos <- neg
-	}
-	
-	boot$boot.summary$e.intercept[i,1] <- pos
+		boot$boot.summary$y.intercept[i,1] <- out$yint
+		boot$boot.summary$x.intercept[i,1] <- out$xint
+		boot$boot.summary$e.intercept[i,1] <- out$eint
+		predicted$x[1,] <- out$x
+		predicted$y[i,] <- out$y
 
 	}
 #end of bootstrap loop!
@@ -1369,33 +700,11 @@ cat("This is an object of class spline.correlog produced by the call:\n\n", x$ca
 
 
 ##############################################################################################
-correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE, quiet = TRUE){
+correlog<-function(x, y, z, w=NULL, increment, resamp = 1000, latlon = FALSE, na.rm = FALSE, quiet=FALSE){
 ##############################################################################################
 #correlog estimates the spatial correlogram (if z is univariate)
 #or the Mantel correlogram (if z is multivariate), or the (uni-/multivariate)
 #cross-correlogram (if the optional w data set is given).
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         vector of length n representing univariate observations or matrix of dimension n x p
-#	      representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate
-#	      the spatial cross-correlation function
-#increment the increament for the uniformely distributed distance classes
-#resamp	   the number of permutations under the null
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#
-#VALUE
-#an object of class correlog is returned consisted of the following components:
-#correlation    is the value for the moran correlogram
-#mean.of.class  is the realized mean of distance within each distance class
-#nlok           is the number of pairs within each distance class
-#x.intercept    is the interpolate x.intercept suggested by Epperson (1993)
-#p              is the permutation p-value for each distance
-#corr0		if a cross-correlogram is calculated, corr0 gives the empirical
-#		      within-patch cross-correlation
 #######################################################################################
 
 NAO <- FALSE
@@ -1458,15 +767,8 @@ NAO <- FALSE
 
 	#then generating geographic distances
 	if(latlon){
-				n<-length(x)
                 #these are geographic distances from lat-lon coordinates
-                dmat <- matrix(0, nrow = n, ncol = n)
-                for(i in 1:(n-1)) {
-                        for(j in (i+1):n) {
-                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                dmat[i, j] <- dmat[j, i]
-                        }
-                }
+                xdist <- gcdist(x,y)
         }
 
 	else{
@@ -1507,7 +809,11 @@ NAO <- FALSE
 		perm <- matrix(NA, ncol = length(moran), nrow = resamp)
 
 		for(i in 1:resamp){
-    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 
 			trekk <-sample(1:n)
 			dma <- dmat2[trekk,trekk]
@@ -1552,31 +858,13 @@ plot.correlog<-function(x, ...){
 	title("Correlogram")
 }
 ##############################################################################################
-correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet = TRUE){
+correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, latlon=FALSE, quiet=FALSE){
 ##############################################################################################
 #correlog.nc estimates the noncentred correlogram
 #and cross-correlogram. Bjornstad et al. (1999; Trends in Ecology and
 #Evolution 14:427-431)
 #The function requires mulitple observations at each location (use
 #correlog otherwise).
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         matrix of dimension n x p representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate
-#	      the spatial cross-correlation function)
-#increment the increament for the uniformely distributed distance classes
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#
-#VALUE
-#an object of class correlog is returned consisted of the following components:
-#correlation     is the value for the moran correlogram
-#mean.of.class  is the realized mean of distance within each distance class
-#nlok           is the number of pairs within each distance class
-#x.intercept    is the interpolate x.intercept suggested by Epperson (1993)
-#corr0		if a cross-correlogram is calculated, corr0 gives the empirical
-#		      within-patch cross-correlation
 #######################################################################################
 
 	NAO <- FALSE
@@ -1594,15 +882,8 @@ correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, 
 
 #then generating geographic distances
 	if(latlon){
-		n<-length(x)
                 #these are geographic distances from lat-lon coordinates
-                dmat <- matrix(0, nrow = n, ncol = n)
-                for(i in 1:(n-1)) {
-                        for(j in (i+1):n) {
-                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                dmat[i, j] <- dmat[j, i]
-                        }
-                }
+                xdist <- gcdist(x,y)
         }
 
 	else{
@@ -1676,7 +957,11 @@ if(is.null(w)){
 		perm <- matrix(NA, ncol = length(moran), nrow = resamp)
 
 		for(i in 1:resamp){
-    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 
 
 			trekk <-sample(1:n)
@@ -1708,29 +993,10 @@ if(is.null(w)){
 }
 
 ##############################################################################################
-mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE, quiet = TRUE){
+mSynch<-function(x, y=NULL, resamp = 1000, na.rm = FALSE, circ=FALSE, quiet=FALSE){
 ##############################################################################################
 #mSynch is a function to estimate the mean (cross-)correlation with bootstrapp CI for one
 #or two panels of spatiotemporal data
-#
-#REQUIRED ARGUMENTS
-#x         matrix of dimension n x p representing p observation at each location (i.e.
-#		each row is a time series)
-#
-#OPTIONAL ARGUMENTS
-#y         optional matrix of dimension m x p representing p observation at each location (i.e.
-#		each row is a time series). If provided, the mean cross-correlation between 
-#		the two	panels is computed. 
-#
-#resamp    is the number of resamples for the bootstrap
-#na.rm   if TRUE, misssing values is accomodated through a pairwise deletion.  -- the 
-#               calculation will dump if any one pair has less than two (temporally)
-#               overlapping observations.
-#
-#VALUE
-#an object of class mSynch is returned consisted of the following components:
-#Sbar 	$real is the regional average sychrony
-#	$boot gives the full vector of bootstrap resamples
 ############################################################################################
 
 NAO <- FALSE
@@ -1785,7 +1051,10 @@ Sbar$boot <- NULL
 if(resamp != 0) {
 	Sbar$boot<-matrix(NA, nrow = resamp, ncol = 1)
 	for(i in 1:resamp) {
- 	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
 
 	#here is the bootstrapping/randomization
 	trekkx <- sample(1:n, replace = TRUE)
@@ -1831,26 +1100,10 @@ if(resamp != 0) {
 
 
 ##############################################################################################
-mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE, quiet = TRUE){
+mantel.test<-function(M1=NULL, M2=NULL, x=NULL, y=NULL, z=NULL, resamp = 1000, latlon = FALSE, quiet=FALSE){
 ##############################################################################################
 #mantel.test is a function to calculate the mantel test for two matrices,
 #or for {x, y, z} data.
-#
-#REQUIRED ARGUMENTS
-#M1        similarity/distance matrix 1
-#M2        similarity/distance matrix 2
-#   or
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         vector of length n representing univariate observations or matrix of dimension n x p
-#	      representing p observation at each location
-#resamp	   the number of permutations under the null
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#	
-#VALUE
-#an object of class mantel is returned consisted of the following components:
-#correlation    is the value for the Mantel correlation
-#p              is the p-value
 #######################################################################################
 	if(is.null(M1)&is.null(x)){
 			stop("you must provide either distance/similarity\nmatrices OR vectors of x-/y-coordinates and observations")
@@ -1878,13 +1131,7 @@ if(!is.null(x)){
 	#then generating geographic distances
 	if(latlon){
                 #these are geographic distances from lat-lon coordinates
-                M1 <- matrix(0, nrow = n, ncol = n)
-                for(i in 1:(n-1)) {
-                        for(j in (i+1):n) {
-                                M1[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                M1[i, j] <- M1[j, i]
-                        }
-                }
+               M1 <- gcdist(x,y)
         }
 
 	else{
@@ -1911,7 +1158,11 @@ else{	#if x is null
 		perm <- rep(NA, resamp)		
 
 		for(i in 1:resamp){
-    	if(! quiet)	{cat(i, " of ", resamp, "\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 			trekk <-sample(1:n)
 			d <- M12[trekk,trekk]
 			m <- M2
@@ -1935,29 +1186,11 @@ else{	#if x is null
 }
 
 ##############################################################################################
-partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson', quiet = TRUE){
+partial.mantel.test<-function(M1, M2, M3, resamp = 1000, method='pearson', quiet=FALSE){
 ##############################################################################################
 #partial.mantel.tets is a simple function to calculate Mantel and partial mantel tests for three matrices,
 #the partial mantel test is calculated to test for relationships between M1 and M2 (or M3) cotrolling for M3 (M2).
 #syntax and logic follows Legendre & Legendre (1998) pp 557-558
-#
-#I've commented the code crudely to make everything as transparent as possible. I'd greatly
-#appreciate any comment or suggestion (onb1@psu.edu). 
-#
-#REQUIRED ARGUMENTS
-#M1        similarity/distance matrix 1
-#M2        similarity/distance matrix 2
-#M3        similarity/distance matrix 2
-#
-#resamp	   the number of permutations under the null
-#	
-#VALUE
-#an object of class mantel is returned consisted of the following components:
-#MantelR    is the vector of observed Mantel and partial Mantel correlations
-#p              is the vector of p-value under randoomization
-#
-#References:
-#Legendre, P., and L. Legendre. 1998. Numerical Ecology, 2nd edition. Elsevier, Amsterdam
 #######################################################################################
 #check for missing values
 if(any(!is.finite(M1))||any(!is.finite(M2))||any(!is.finite(M3))) {
@@ -1983,8 +1216,11 @@ perm<-matrix(NA, ncol=5, nrow=resamp)
 
 
 for(i in 1:resamp){
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
 
-  if(! quiet)	{cat(i, " of ", resamp, "\n")}
 
 	trekk <-sample(1:n)
 	M1r <- M1[trekk,trekk]
@@ -2017,29 +1253,10 @@ return(out)
 }
 
 ##############################################################################################
-lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = TRUE){
+lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet=FALSE){
 ##############################################################################################
 #lisa is a function to estimate the local indicators
 #of spatial association.
-#
-#I've commented the code crudely to make everything as transparent as possible. I'd greatly
-#appreciate any comment or suggestion (onb1@psu.edu). 
-#
-#The outer code is in public domain. Upon modifying the code, please comment it.
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         vector of length n representing the x coordinates
-#neigh 	   the size of the local neighborhood
-#latlon	   if TRUE, coordinates are in latitude and longitude
-#
-#VALUE
-#an object of class lisa is returned consisted of the following components:
-#correlation    is the mean within neigh
-#dmean		is the realized mean of distance within neigh
-#n              is the number of pairs within neigh
-#p.val          is the number of permutations under the null
 #######################################################################################
 
   if(!is.null(dim(z))){
@@ -2052,13 +1269,7 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = TRUE){
 
 	if(latlon){
                 #these are geographic distances from lat-lon coordinates
-               dmat <- matrix(0, nrow = n, ncol = n)
-                for(i in 1:(n-1)) {
-                        for(j in (i+1):n) {
-                                dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                dmat[i, j] <- dmat[j, i]
-                        }
-                }
+                dmat <- gcdist(x,y)
         }
 
 	else{
@@ -2086,8 +1297,11 @@ lisa<-function(x, y, z, neigh, resamp=1000, latlon = FALSE, quiet = TRUE){
      perm<-matrix(NA, nrow=resamp, ncol=n)
  
     for(i in 1:resamp){
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
 
-    if(! quiet)	{cat(i, " of ", resamp, "\n")}
 
     trekk<-sample(1:n)
     zx2<-zx[trekk, trekk]
@@ -2147,7 +1361,7 @@ if(!is.null(length(z2[[1]][sel[[2]]]))){
 
 
 ##############################################################################################
-lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet = TRUE){
+lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, quiet=FALSE){
 ##############################################################################################
 
   if(is.null(dim(z))){
@@ -2170,16 +1384,10 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
 
 	#then generating geographic distances
 
-  if(latlon){
-                  #these are geographic distances from lat-lon coordinates
-                 dmat <- matrix(0, nrow = n, ncol = n)
-                  for(i in 1:(n-1)) {
-                          for(j in (i+1):n) {
-                                  dmat[j, i] <- gcdist(x[i], y[i], x[j], y[j])
-                                  dmat[i, j] <- dmat[j, i]
-                          }
-                  }
-          }
+	if(latlon){
+                #these are geographic distances from lat-lon coordinates
+                dmat <- gcdist(x,y)
+        }
 
 	else{
 		dmat <- sqrt(outer(x,x, "-")^2+outer(y,y,"-")^2)
@@ -2200,7 +1408,11 @@ lisa.nc<-function(x, y, z, neigh, na.rm = FALSE, resamp=1000, latlon = FALSE, qu
      perm<-matrix(NA, nrow=resamp, ncol=n)
 
     for(i in 1:resamp){
-    if(! quiet)	{cat(i, " of ", resamp, "\n")}
+ 		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
+
 
     trekk<-sample(1:n)
     zx2<-zx[trekk, trekk]
@@ -2284,17 +1496,6 @@ rmvn.spa <- function(x, y, p, method = "exp", nugget = 1){
 #Function to generate spatially autocorrelated random normal variates using the 
 #eigendecomposition method. Spatial covariance can follow either and exponential 
 #or Gaussian model. 
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#p         the range of the spatial models
-#method    either "exp" (exponential) or "gaus" (gaussian)
-#nugget    correlation at the origin (defaults to one)
-#
-#VALUE
-#a vector of spatially correlated random normal variates with zero mean and unit variance
-#is returned
 ##############################################################################################
 
 imeth <- charmatch(method, c("exp", "gaus"), nomatch = NA)
@@ -2328,74 +1529,29 @@ dmat <- sqrt(outer(x,x, "-")^2+outer(y,y,"-")^2)
 }
 
 ##############################################################################################
-gcdist <- function(x1, y1, x2, y2) {
+gcdist=function(x,y){
+#vecotorized gcdist function
 ##############################################################################################
-#a function called by several functions in the ncf library
-#Function for great circle distance -- due to T. Keitt.
-#See http://www.census.gov/cgi-bin/geo/gisfaq?Q5.1
-##############################################################################################
-	  r <- 360/(2 * pi)
-	  lon1 <- x1 / r
-	  lat1 <- y1 / r
-	  lon2 <- x2 / r
-	  lat2 <- y2 / r
-	  dlon <- lon2 - lon1
-	  dlat <- lat2 - lat1
-	  a <- (sin(dlat/2))^2 + cos(lat1) * cos(lat2) * (sin(dlon/2))^2
-	  c <- 2 * atan2( sqrt(a), sqrt(1-a) )
-	  return(6370 * c)
+    r <- 360/(2 * pi)
+    lon <- x/r
+    lat <- y/r
+    dlon <- outer(lon, lon, "-")
+    dlat <- outer(lat,lat,"-")
+    a <- (sin(dlat/2))^2 + outer(cos(lat), cos(lat), "*") * (sin(dlon/2))^2
+    c <- 2 * atan2(sqrt(a), sqrt(1 - a))
+    return(6370 * c)
 }
+
 
 ##############################################################################################
 Sncf2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, quiet = TRUE,
+  save = FALSE, max.it=25, xmax= FALSE, na.rm = FALSE, jitter= FALSE, quiet=FALSE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #Sncf2D is the function to estimate the anisotropic nonparametric covariance function 
 #(using a smoothing spline as an equivalent kernel) in 8 (or arbitrary) directions (North - Southeast) 
 #through calculateing projected distances onto the different bearings (i.e. all data are used for each 
 #direction = 0,22.5,45,67.5,90,112.5,135,157.5)
-#
-#The outer code is in public domain. Upon modifying the code, please comment it.
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         matrix of dimension n x p representing p observation at each location
-#w         an optional second matrix of dimension n x p for species 2 (to estimate 
-#	      the spatial cross-correlation function
-#
-#df        degrees of freedom for the spline. The default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a 
-#            null distribution for the estimator under randomization
-#resamp    is the number of resamples for the bootstrap or the null distribution
-#npoints   is the number of points at which to save the value for the spline function (and
-#             confidence envelope / null distribution)
-#save      if True, the whole matrix of output from the resampling is saved (an resamp x npoints
-#             dimensional matrix)
-#xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
-#	      than xmax is omitted
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#jitter	   if TRUE, jitters distance matrix, to avoid problems associated with
-#	      data on regular grids
-#angle     specifies number of directions and angles for which to calculate correlation functions
-#
-#VALUE
-#an object of class Sncf2D is returned consisted of the following components:
-#real      For each of the 8 directions it gives a list containing
-#	   $predicted$x is the x coordinates for the fitted covariance function
-#          $predcited$y is the y values for the covariance function
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is 
-#	       initially negative, the distance calculated is negative
-#	   $e.intercept is the lowest value at which the function is <= 1/e
-#          $y.intercept is the extrapolated value at x=0
-#          $cbar.intercept is distance at which regional average sychrony is reach
-#          $cbar is the regional average sychrony
-#boot      gives the analogous output from the bootstrap or randomization resampling
-#boot$summary  gives the full vector of output for the x.intercept, y.intercept,
-#	   e.intercept, and the cbar
-#              and a quantile summary for the resampling distribution
-#boot$boot     if save= TRUE, the full raw matrices from the resampling is saved
 ############################################################################################
 
 #the following sets up the output:
@@ -2515,107 +1671,22 @@ for(d in 1:length(ang)){
 	v <- v[abs(u) <= maxdist]
 	u <- u[abs(u) <= maxdist]
 
+	out=gather(u=u,v=v,w=w, moran=moran, df=df, xpoints=xpoints, filter=FALSE, fw=0)
 	real$cbar <- mean(v)
-	sobj <- smooth.spline(u, v, df = df)
-
-	lx <- predict(sobj, x = xpoints)
-
 	if(is.null(w)){
-		real[[d]]$y.intercept <- predict(sobj, 0)$y
+		real[[d]]$y.intercept <- out$yint
 	}
-
 	else{
 		real[[d]]$y.intercept <-  mean(diag(moran))
 	}
 
-	real[[d]]$predicted <- list(x = lx$x, y = lx$y)
+	real[[d]]$predicted <- list(x = out$x, y = out$y)
 	real[[d]]$predicted$y[abs(real[[d]]$predicted$x)>mdist] <- NA
-
-	konst<-1
-	if(real[[d]]$y.intercept<0){
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-
-#newtons method to find the x-intercept
-
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	lx$y <- konst*lx$y
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6)
-			break
-		pos <- neg
-	}
-	real[[d]]$x.intercept <- konst*pos
-
-##Now find the e-folding scale
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real[[d]]$e.intercept <- pos
-
-##Now find the cbar-folding scale
-	sobj <- smooth.spline(u, v - real$cbar, df = df)
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the cbar-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real[[d]]$cbar.intercept <- pos
+	real[[d]]$x.intercept <-out$xint
+	real[[d]]$e.intercept <- out$eint
+	real[[d]]$cbar.intercept <- out$cint
+	
+	
 ##End of spline fit
 
 	if(resamp != 0) {
@@ -2623,8 +1694,9 @@ for(d in 1:length(ang)){
 		boot[[d]]$predicted$x[1,] <- xpoints
 
 		for(i in 1:resamp) {
-
-		if(! quiet)	{cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")}
+		whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\r")
+		flush.console()}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -2663,116 +1735,23 @@ for(d in 1:length(ang)){
 		v <- v[u<=maxdist]
 		u <- u[u<=maxdist]
 
-		boot[[d]]$boot.summary$cbar[i,1] <- mean(v)		
-		sobj <- smooth.spline(u, v, df = df)
-		lx <- predict(sobj, x = xpoints)
-
+	out=gather(u=u,v=v,w=w, moran=moranb, df=df, xpoints=xpoints, filter=FALSE, fw=0)
+	boot[[d]]$boot.summary$cbar[i,1] <- mean(v)		
+	
 		if(is.null(w)){
-			boot[[d]]$boot.summary$y.intercept[i,1] <- predict(tmp, 0)$y
+			boot[[d]]$boot.summary$y.intercept[i,1] <- out$yint
 		}
-
 		else {
 			boot[[d]]$boot.summary$y.intercept[i,1] <- mean(diag(moran[trekky, trekky]))
 		}
 
-		boot[[d]]$predicted$y[i,] <- lx$y
-		boot[[d]]$predicted$y[i,][abs(boot[[d]]$predicted$x[1,])>mdist] <- NA
-
-		konst<-1
-
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		if(boot[[d]]$boot.summary$y.intercept[i,1]<0){
-			lx$y <- -lx$y
-			konst <- -1
-		}
-
-		ly <- 1:length(lx$y)
-
-	#newtons method to find the x-intercept
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-		for(j in 1:max.it){
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6){
-				break
-			}
-			pos <- neg
-		}
-
-		boot[[d]]$boot.summary$x.intercept[i,1] <- konst*pos
-
-	#Now find the e-folding scale
-
-		sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-		#newtons method to find the e-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-
-		boot[[d]]$boot.summary$e.intercept[i,1] <- pos
-
-	#Now find the cbar-folding scale
-
-		sobj <- smooth.spline(u, v - real$cbar, df = df)
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-	#newtons method to find the cbar-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-		boot[[d]]$boot.summary$cbar.intercept[i,1] <- pos
+	boot[[d]]$predicted$y[i,] <- out$y
+	boot[[d]]$predicted$y[i,][abs(boot[[d]]$predicted$x[1,])>mdist] <- NA
+	boot[[d]]$boot.summary$x.intercept[i,1] <- out$xint
+	boot[[d]]$boot.summary$e.intercept[i,1] <- out$eint
+	boot[[d]]$boot.summary$cbar.intercept[i,1]  <- out$cint
 	}
+
 ##end of bootstrap loop!
 
 	if(save == TRUE) {
@@ -2920,69 +1899,38 @@ cc.offset<-function(object, xmax=NULL){
 }
 
 ##############################################################################################
-plot.cc.offset <- function(x, xmax = 0, xlim=NULL, ylim=NULL, ...){
+plot.cc.offset <- function(x, dmax=NULL, inches=NULL, ...){
 ##############################################################################################
 #this is the generic plot function for cc.offset objects
 ##############################################################################################
 	theta <- 2*pi*x[,"angle"]/360
 	x2 <- x[,"distance"]*sin(theta)
 	y <- x[,"distance"]*cos(theta)
-	xl=xlim
-	yl=ylim
-	if(is.null(xlim)) xl = c(-max(abs(c(x2,y))), max(abs(c(x2,y))))
-	if(is.null(ylim)) yl = c(-max(abs(c(x2,y))), max(abs(c(x2,y))))
+	inc=inches
+	if(is.null(dmax)) dmax=max(abs(c(x2,y)))
+	if(is.null(inches)) inc=.1
+	#tmp<-rep(0, length(theta))
 	tmp<-x[,"correlation"]
-	symbols(x2,y, circles= ifelse(tmp>0,tmp,0), inches=.1, xlim=xl, ylim=yl, xlab="", ylab="")
-	abline(c(0,0), yl)
-	lines(xl, c(0,0))
+  	axs=pretty(c(0, dmax), n=4)
+  	yl=xl=c(-max(axs), max(axs))
+	symbols(x2,y, circles= ifelse(tmp>0,tmp,0), inches=inc, xlim=xl, ylim=yl, xlab="", ylab="", fg=1, bg=2, asp=1, xaxt="n", yaxt="n", bty="n")
+	symbols(rep(0,length(axs)), rep(0,length(axs)), circles=axs, inches=FALSE, xlab="", 
+        ylab="", xaxt="n", yaxt="n", bty="n", add=TRUE)	
+	lines(c(0,0), yl)
+	lines(yl, c(0,0))
+	text(axs[-1], rep(0,length(axs))[-1], axs[-1], cex=0.6, pos=1)
+	symbols(x2,y, circles= ifelse(tmp>0,tmp,0), inches=inc, xlim=xl, ylim=yl, xlab="", ylab="", fg=1, bg=2, asp=1, xaxt="n", yaxt="n", add=TRUE, bty="n")
 }
 
 ##############################################################################################
 spline.correlog.2D <- function(x, y, z, w=NULL, df = NULL, type = "boot", resamp = 1000, npoints = 300,
-  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, quiet = TRUE,
+  save = FALSE, max.it=25, xmax=FALSE, na.rm = FALSE, jitter=FALSE, quiet=FALSE,
   angle=c(0,22.5,45,67.5,90,112.5,135,157.5)){
 ##############################################################################################
 #spline.correlog.2D is the function to estimate the anisotropic nonparametric covariance function
 #(using a smoothing spline as an equivalent kernel) in 8 (or arbitrary) directions (North - Southeast) 
 #through calculateing projected distances onto the different bearings (i.e. all data are used for each 
 #direction = 0,22.5,45,67.5,90,112.5,135,157.5)
-#
-#REQUIRED ARGUMENTS
-#x         vector of length n representing the x coordinates
-#y         vector of length n representing the y coordinates
-#z         a vector representing the observation at each location
-#w         an optional second vector for species 2 (or time lag) (to estimate 
-#	      the spatial cross-correlation function
-#
-#df        degrees of freedom for the spline. The default is sqrt(n)
-#type      takes the value "boot" to generate a bootstrap distribution or "null" to generate a 
-#            null distribution for the estimator under randomization
-#resamp    is the number of resamples for the bootstrap or the null distribution
-#npoints   is the number of points at which to save the value for the spline function (and
-#             confidence envelope / null distribution)
-#save      if True, the whole matrix of output from the resampling is saved (an resamp x npoints
-#             dimensional matrix)
-#xmax	   if FALSE the max observed in the data is used. Otherwise all distances greater
-#	      than xmax is omitted
-#na.rm   if TRUE, missing values is accomodated through a pairwise deletion.
-#jitter	   if TRUE, jitters distance matrix, to avoid problems associated with
-#	      data on regular grids
-#angle     specifies number of directions and angles for which to calculate correlation functions
-#
-#VALUE
-#an object of class Sncf2D is returned consisted of the following components:
-#real      For each of the 8 directions it gives a list containing
-#	   $predicted$x is the x coordinates for the fitted covariance function
-#          $predcited$y is the y values for the covariance function
-#          $x.intercept is the lowest value at which the function is = 0. If correlation is 
-#	       initially negative, the distance calculated is negative
-#	   $e.intercept is the lowest value at which the function is <= 1/e
-#          $y.intercept is the extrapolated value at x=0
-#boot      gives the analogous output from the bootstrap or randomization resampling
-#boot$summary  gives the full vector of output for the x.intercept, y.intercept,
-#	   e.intercept, and the cbar
-#              and a quantile summary for the resampling distribution
-#boot$boot     if save=TRUE, the full raw matrices from the resampling is saved
 ############################################################################################
 
 #the following sets up the output:
@@ -3100,107 +2048,21 @@ for(d in 1:length(ang)){
 	v <- v[abs(u) <= maxdist]
 	u <- u[abs(u) <= maxdist]
 
+	out=gather(u=u,v=v,w=w, moran=moran, df=df, xpoints=xpoints, filter=FALSE, fw=0)
 	real$cbar <- mean(v)
-	sobj <- smooth.spline(u, v, df = df)
-
-	lx <- predict(sobj, x = xpoints)
-
 	if(is.null(w)){
-		real[[d]]$y.intercept <- predict(sobj, 0)$y
+		real[[d]]$y.intercept <- out$yint
 	}
-
 	else{
 		real[[d]]$y.intercept <-  mean(diag(moran))
 	}
 
-	real[[d]]$predicted <- list(x = lx$x, y = lx$y)
+	real[[d]]$predicted <- list(x = out$x, y = out$y)
 	real[[d]]$predicted$y[abs(real[[d]]$predicted$x)>mdist] <- NA
+	real[[d]]$x.intercept <-out$xint
+	real[[d]]$e.intercept <- out$eint
+	real[[d]]$cbar.intercept <- out$cint
 
-	konst<-1
-	if(real[[d]]$y.intercept<0){
-		konst <- -1
-	}
-
-	ly <- 1:length(lx$y)
-
-#newtons method to find the x-intercept
-
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	lx$y <- konst*lx$y
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6)
-			break
-		pos <- neg
-	}
-	real[[d]]$x.intercept <- konst*pos
-
-##Now find the e-folding scale
-	sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the e-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real[[d]]$e.intercept <- pos
-
-##Now find the cbar-folding scale
-	sobj <- smooth.spline(u, v - real$cbar, df = df)
-	lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-	ly <- 1:length(lx$y)
-	choise <- ly[lx$y < 0][1]
-	pos <- lx$x[choise - 1]
-	neg <- lx$x[choise]
-	pos <- pos + (neg - pos)/2
-	tmp <- smooth.spline(lx)
-	#newtons method to find the cbar-folding scale
-	for(j in 1:max.it) {
-		if(is.na(neg)) {
-			pos <- NA
-			break
-		}
-		if(neg == 0) {
-			pos <- 0
-			break
-		}
-		neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-		if(abs(pos - neg) < 1e-6){
-			break
-		}
-		pos <- neg
-	}
-	real[[d]]$cbar.intercept <- pos
 ##End of spline fit
 
 	if(resamp != 0) {
@@ -3208,7 +2070,10 @@ for(d in 1:length(ang)){
 		boot[[d]]$predicted$x[1,] <- xpoints
 
 		for(i in 1:resamp) {
-		if(! quiet)	{cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\n")}
+				whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+			cat(i, " of ", resamp, "(direction", d, "of ", length(ang),")\r")
+		flush.console()}
 		if(type == 1) {
 			trekkx <- sample(1:n, replace = TRUE)
 			trekky <- trekkx
@@ -3247,116 +2112,23 @@ for(d in 1:length(ang)){
 		v <- v[u<=maxdist]
 		u <- u[u<=maxdist]
 
-		boot[[d]]$boot.summary$cbar[i,1] <- mean(v)		
-		sobj <- smooth.spline(u, v, df = df)
-		lx <- predict(sobj, x = xpoints)
-
+	out=gather(u=u,v=v,w=w, moran=moranb, df=df, xpoints=xpoints, filter=FALSE, fw=0)
+	boot[[d]]$boot.summary$cbar[i,1] <- mean(v)		
+	
 		if(is.null(w)){
-			boot[[d]]$boot.summary$y.intercept[i,1] <- predict(tmp, 0)$y
+			boot[[d]]$boot.summary$y.intercept[i,1] <- out$yint
 		}
-
 		else {
 			boot[[d]]$boot.summary$y.intercept[i,1] <- mean(diag(moran[trekky, trekky]))
 		}
 
-		boot[[d]]$predicted$y[i,] <- lx$y
-		boot[[d]]$predicted$y[i,][abs(boot[[d]]$predicted$x[1,])>mdist] <- NA
-
-		konst<-1
-
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		if(boot[[d]]$boot.summary$y.intercept[i,1]<0){
-			lx$y <- -lx$y
-			konst <- -1
-		}
-
-		ly <- 1:length(lx$y)
-
-	#newtons method to find the x-intercept
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-		for(j in 1:max.it){
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6){
-				break
-			}
-			pos <- neg
-		}
-
-		boot[[d]]$boot.summary$x.intercept[i,1] <- konst*pos
-
-	#Now find the e-folding scale
-
-		sobj <- smooth.spline(u, v - 1/exp(1), df = df)
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-		#newtons method to find the e-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-
-		boot[[d]]$boot.summary$e.intercept[i,1] <- pos
-
-	#Now find the cbar-folding scale
-
-		sobj <- smooth.spline(u, v - real$cbar, df = df)
-		lx <- predict(sobj, x = seq(0, maxdist, length = npoints))
-
-		ly <- 1:length(lx$y)
-		choise <- ly[lx$y < 0][1]
-		pos <- lx$x[choise - 1]
-		neg <- lx$x[choise]
-		pos <- pos + (neg - pos)/2
-		tmp <- smooth.spline(lx)
-
-	#newtons method to find the cbar-folding scale
-		for(j in 1:max.it) {
-			if(is.na(neg)) {
-				pos <- NA
-				break
-			}
-			if(neg == 0) {
-				pos <- 0
-				break
-			}
-
-			neg <- pos - predict(tmp, pos)$y/predict(tmp,pos, deriv = 1)$y
-			if(abs(pos - neg) < 1e-6)
-				break
-			pos <- neg
-		}
-		boot[[d]]$boot.summary$cbar.intercept[i,1] <- pos
+	boot[[d]]$predicted$y[i,] <- out$y
+	boot[[d]]$predicted$y[i,][abs(boot[[d]]$predicted$x[1,])>mdist] <- NA
+	boot[[d]]$boot.summary$x.intercept[i,1] <- out$xint
+	boot[[d]]$boot.summary$e.intercept[i,1] <- out$eint
+	boot[[d]]$boot.summary$cbar.intercept[i,1]  <- out$cint
 	}
+
 ##end of bootstrap loop!
 
 	if(save == TRUE) {
@@ -3379,8 +2151,9 @@ for(d in 1:length(ang)){
 	res
 }
 
+
 ##############################################################################################
-mantel.correlog<-function(dmat, zmat, wmat=NULL, increment, resamp = 1000, quiet=TRUE){
+mantel.correlog<-function(dmat, zmat, wmat=NULL, increment, resamp = 1000, quiet=FALSE){
 ##############################################################################################
 
 if(is.null(wmat)){
@@ -3446,7 +2219,11 @@ if(moran[1] < 0) {
 
 			dkl <- ceiling(dma/increment)	#generates the distance matrices
 			perm[i,] <- sapply(split(mor, dkl), mean, na.rm = TRUE)
-		if(! quiet)	{cat(i, " of ", resamp, "\n")}
+			
+			whn=pretty(c(1,resamp), n=10)
+		if(! quiet & any(i==whn)){
+		cat(i, " of ", resamp, "\r")
+		flush.console()}
 		}
 
   p=(apply(moran<=t(perm),1,sum))/(resamp+1)
@@ -3462,6 +2239,33 @@ if(moran[1] < 0) {
 	class(res) <- "correlog"
 	res
 }
+
+############################################################################################
+circ.cor2<-function (x, y=NULL){
+#Fast vectorized circular correlation 
+############################################################################################
+		circ.mean<-function (x){
+ 		    x=na.omit(x)
+ 		    sinr <- sum(sin(x))
+ 		    cosr <- sum(cos(x))
+ 		    circmean <- atan2(sinr, cosr)
+ 		    circmean
+ 		}
+		
+			if(is.vector(x) & is.vector(y)){
+			x=as.matrix(x)
+			y=as.matrix(y)
+			}
+ 		        x.bar <- apply(x, 2, circ.mean)
+ 		        	y.bar <- apply(y, 2, circ.mean)
+			num <- tcrossprod(sin(t(x) - x.bar), sin(t(y) - y.bar))
+	                 den <- sqrt(outer(
+    			apply(t(sin(t(x) - x.bar))^2,2,sum),
+			    apply(t(sin(t(y) - y.bar))^2, 2,sum), "*"))
+ 		        r <- num/den
+ 		return(r)
+ 	}
+
 
 ############################################################################################
 cor2<-function(x, y = NULL, circ=FALSE){
@@ -3503,9 +2307,15 @@ cor2<-function(x, y = NULL, circ=FALSE){
 		  y<-x
   	}
 
+	if(all(is.finite(x)&is.finite(y))){
+	cor<-circ.cor2(x,y)
+	}
+	
+	if(!all(is.finite(x)&is.finite(y))){	
+	cat("Missing values with circular data: calculations may take some time.")
 	m<-dim(x)[2]
-
 	#this part (for circular correlations is likely to be SLOW (it's a double loop)
+	#I should use distm() from geosphere instead
 	cor <- matrix(NA, nrow = m, ncol = m)
 	for(i in 1:m) {
 		for(j in i:m) {
@@ -3514,6 +2324,7 @@ cor2<-function(x, y = NULL, circ=FALSE){
 			cor[i, j] <- tmp
 			}
 		}
+	}
     }
     return(cor)
 }

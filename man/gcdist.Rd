@@ -6,23 +6,15 @@
 }
 
 \usage{
-    gcdist(x1, y1, x2, y2)
+    gcdist(x, y)
 }
 \arguments{
-  \item{x1}{longitude 1.}
-  \item{x2}{longitude 2.}
-  \item{y1}{latitude 1.}
-  \item{y2}{latitude 2.}
-}
-
-\details{
-Function for great circle distance -- due to T. Keitt.
+  \item{x}{Vector of longitudes.}
+  \item{y}{Vector of latitudes.}
 }
 
 \value{
 The distance in km is returned
 } 
-
-\author{Tim H. Keitt}
 
 \keyword{misc}

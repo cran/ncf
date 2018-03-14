@@ -6,22 +6,21 @@
 }
 
 \usage{
-    \method{plot}{cc.offset}(x, xmax = 0, xlim=NULL, ylim=NULL, \dots)
+    \method{plot}{cc.offset}(x, dmax = NULL, inches = NULL, \dots)
 }
 \arguments{
   \item{x}{an object of class "cc.offset", ususally, as
   a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.}
-  \item{xmax}{The maximal distance to be plotted on the x-axis. 
-  If set to zero the maximum distance in the data will be used.}
-  \item{xlim}{Limits for x-axis.}
-  \item{ylim}{Limits for y-axis.}
+  \item{dmax}{The maximal distance for radial plot. 
+  If NULL the maximum distance in the data will be used.}
+  \item{inches}{The size of the symbols, if NULL default is 0.1.}
   \item{\dots}{other arguments}
 }
 
 \value{
  A radial 'symbol' plot results. The radius represents the distance to peak 
  correlation (the mode) of the correlation function (in the positive 
- direction). The size of the synmbol represents the magnitude of the 
+ direction). The size of the symbol represents the magnitude of the 
  correlation at the mode for the given cardinal direction.
 } 
 
@@ -30,6 +29,3 @@
 \code{\link{Sncf2D}} 
 \code{\link{plot.Sncf2D}} 
 }
-
-\keyword{smooth}
-\keyword{regression}

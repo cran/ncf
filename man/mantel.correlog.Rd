@@ -9,7 +9,7 @@
 
 \usage{
 mantel.correlog(dmat, zmat, wmat = NULL, increment, resamp = 1000, 
-quiet = TRUE)
+quiet = FALSE)
 }
 
 \arguments{
