@@ -47,9 +47,9 @@
 } 
 
 \references{
-Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial 
-population dynamics: Analysing patterns and processes of 
-population synchrony. Trends in Ecology and Evolution, 11:427-431.
+Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population
+dynamics: Analysing patterns and processes of population synchrony.
+Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

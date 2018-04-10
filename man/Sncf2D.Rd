@@ -100,7 +100,7 @@ The function to estimate the anisotropic nonparametric (cross-)correlation funct
 
 \references{
 Bjornstad, O. N., M. Peltonen, A. M. Liebhold, and W. Baltensweiler. 2002. Waves 
-of larch budmoth outbreaks in the European Alps. Science 298:1020-1023.
+of larch budmoth outbreaks in the European Alps. Science 298:1020-1023. \url{https://doi.org/10.1126/science.1075182}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

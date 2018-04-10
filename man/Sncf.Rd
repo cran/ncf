@@ -93,23 +93,23 @@ xmax = FALSE, na.rm = FALSE, latlon = FALSE, circ = FALSE, quiet = FALSE)
 
 \references{
 Hall, P. & Patil, P. (1994) Properties of nonparametric estimators of autocovariance 
-for stationary random fields. Probability Theory and Related Fields, 99:399-424. 
+for stationary random fields. Probability Theory and Related Fields, 99:399-424. \url{https://doi.org/10.1007/BF01199899}
 
 Hall, P., Fisher, N.I. & Hoffmann, B. (1994) On the nonparametric 
-estimation of covariance functions. Annals of Statistics, 22:2115-2134. 
+estimation of covariance functions. Annals of Statistics, 22:2115-2134. \url{https://doi.org/10.1214/aos/1176325774}
 
 Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance 
-functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70.
+functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
  
 Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial 
 population dynamics: Analysing patterns and processes of 
-population synchrony. Trends in Ecology and Evolution, 11:427-431.
+population synchrony. Trends in Ecology and Evolution, 11:427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
 
 Bjornstad, O. N., and J. Bascompte. (2001) Synchrony and second order 
-spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933.
+spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933. \url{https://doi.org/10.1046/j.0021-8790.2001.00560.x}
 
 Grenfell, B.T., Bjornstad, O.N., & Kappey, J. (2001) Travelling waves and 
-spatial hierarchies in measles epidemics. Nature 414:716-723.
+spatial hierarchies in measles epidemics. Nature 414:716-723. \url{https://doi.org/10.1038/414716a}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

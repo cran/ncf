@@ -72,8 +72,8 @@
   } 
 
 \references{
-    Bjornstad, O. N., and J. Bascompte. (2001) Synchrony and second order 
-    spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933.
+Bjornstad, O. N., and J. Bascompte. (2001) Synchrony and second order 
+spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933. \url{https://doi.org/10.1046/j.0021-8790.2001.00560.x}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

@@ -59,10 +59,10 @@
 \references{
 Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population 
 dynamics: Analysing patterns and processes of population synchrony. 
-Trends in Ecology and Evolution, 11, 427-431.
+Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
 
 Koenig, W.D. & Knops, J.M.H. (1998) Testing for spatial autocorrelation 
-in ecological studies. Ecography, 21, 423-429.
+in ecological studies. Ecography, 21, 423-429. \url{https://doi.org/10.1111/j.1600-0587.1998.tb00407.x}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

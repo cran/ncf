@@ -98,7 +98,7 @@ fw = 0, max.it = 25, xmax = FALSE, latlon = FALSE,
 
 \references{
 Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance 
-functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70.
+functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

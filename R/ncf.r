@@ -107,11 +107,11 @@ real <- list(cbar = out$cbar, x.intercept = out$xint, e.intercept = out$eint, y.
 		xdistb <- xdist[trekkx, trekkx]
 
 		if(is.null(w)){
-			triang <- lower.tri(xdist)
+			triang <- lower.tri(xdistb)
 		}
 
 		else {
-			triang <- is.finite(xdist)
+			triang <- is.finite(xdistb)
 		}
 
 		xdistb <- xdistb[triang]
@@ -376,11 +376,11 @@ if(resamp != 0) {
 	xdistb <- xdist[trekkx, trekkx]
 
 	if(is.null(w)){
-		triang <- lower.tri(xdist)
+		triang <- lower.tri(xdistb)
 	}
 
 	else {
-		triang <- is.finite(xdist)
+		triang <- is.finite(xdistb)
 	}
 
 	xdistb <- xdistb[triang]
@@ -768,7 +768,7 @@ NAO <- FALSE
 	#then generating geographic distances
 	if(latlon){
                 #these are geographic distances from lat-lon coordinates
-                xdist <- gcdist(x,y)
+                dmat <- gcdist(x,y)
         }
 
 	else{
@@ -883,7 +883,7 @@ correlog.nc<-function(x, y, z, w=NULL, increment, resamp = 1000, na.rm = FALSE, 
 #then generating geographic distances
 	if(latlon){
                 #these are geographic distances from lat-lon coordinates
-                xdist <- gcdist(x,y)
+                dmat <- gcdist(x,y)
         }
 
 	else{

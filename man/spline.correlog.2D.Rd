@@ -78,11 +78,11 @@ direction but at distance 10 in the 90-degree direction.
 
 \references{
     Oden, N.L. and Sokal, R.R. 1986. Directional autocorrelation: an extension 
-    of spatial correlograms to two dimensions. Systematic Zoology 35: 608-617.
+    of spatial correlograms to two dimensions. Systematic Zoology 35: 608-617. \url{https://doi.org/10.2307/2413120}
 
     Humston, R., Mortensen, D. and Bjornstad, O.N. 2005. Anthropogenic
     forcing on the spatial dynamics of an agricultural weed:
-    the case of the common sunflower. Journal of Applied Ecology 42: 863-872.
+    the case of the common sunflower. Journal of Applied Ecology 42: 863-872. \url{https://doi.org/10.1111/j.1365-2664.2005.01066.x}
 }
 
 \seealso{

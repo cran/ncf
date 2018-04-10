@@ -42,7 +42,8 @@
 }
 
 \references{
-Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115.
+Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115. \url{https://doi.org/10.1111/j.1538-4632.1995.tb00338.x}
+
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}

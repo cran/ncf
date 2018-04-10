@@ -64,13 +64,13 @@ latlon = FALSE, na.rm = FALSE, quiet = FALSE)
 \references{
 Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population
 dynamics: Analysing patterns and processes of population synchrony.
-Trends in Ecology and Evolution, 11, 427-431.
+Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
 
 Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance 
-functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70.
+functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
 
 Epperson, B.K. (1993) Recent advances in correlation studies of spatial 
-patterns of genetic variation. Evolutionary Biology, 27, 95-155.
+patterns of genetic variation. Evolutionary Biology, 27, 95-155. \url{https/doi.org/10.1007/978-1-4615-2878-4_4}
 }
 
 \author{Ottar N. Bjornstad \email{onb1@psu.edu}}
