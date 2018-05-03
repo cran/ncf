@@ -119,6 +119,7 @@ mSynch <- function(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE,
 #' \item{Squantile}{the quantile distribution from the resampling for the regional correlation.}
 #' @seealso \code{\link{mSynch}}
 #' @keywords smooth regression
+#' export
 ################################################################################
 "print.mSynch" <- function(x, verbose = FALSE, ...) {
   ##############################################################################
@@ -131,10 +132,10 @@ mSynch <- function(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE,
     Sbard <- quantile(x$boot, probs = c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), 
                       na.rm = TRUE)
     out <- list(mean = x$real, Squantile = Sbard)
-    print(out)
+    print(out, ...)
     cat("\n\nFor a raw listing use print(x, verbose = TRUE)\n")
   }
   if (verbose) {
-    print.default(x)
+    print.default(x, ...)
   }
 }

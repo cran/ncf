@@ -23,6 +23,7 @@
 #' # plot data
 #' \dontrun{spatial.plot(x = x, y = y, z = z, ctr = FALSE)}
 #' @keywords spatial
+#' @export
 ################################################################################
 spatial.plot <- function(x, y, z, ctr = TRUE, add = FALSE, inches = 0.2, ...) {
   ##############################################################################
@@ -31,7 +32,7 @@ spatial.plot <- function(x, y, z, ctr = TRUE, add = FALSE, inches = 0.2, ...) {
   }
   
   if (add == FALSE) {
-    plot(x, y, type = "n")
+    plot(x, y, type = "n", ...)
   }
   sel <- is.finite(z)
   x <- split(x, z > 0)
@@ -112,6 +113,7 @@ rmvn.spa <- function(x, y, p, method = "exp", nugget = 1) {
 #' @return A list is returned.
 #' @details An auxiliary function to ease  maintenance.
 #' @keywords misc
+#' @export
 gather <- function(u, v, w, moran, df, xpoints, filter, fw) {
   cbar <- mean(v, na.rm = TRUE)
   sobj <- smooth.spline(u, v, df = df)
@@ -162,6 +164,7 @@ gather <- function(u, v, w, moran, df, xpoints, filter, fw) {
 #' @param y vector of latitudes.
 #' @return The distance in km is returned
 #' @keywords misc
+#' @export
 ################################################################################
 gcdist <- function(x, y) {
   # vecotorized gcdist function
@@ -184,6 +187,7 @@ gcdist <- function(x, y) {
 #' @details Missing values are not allowed.
 #' @references Jammalamadaka, S. Rao and SenGupta, A. (2001). Topics in Circular Statistics, Section 8.2, World Scientific Press, Singapore.
 #' @keywords misc
+#' @export
 ################################################################################
 circ.cor2 <- function(x, y = NULL) {
   ##############################################################################
@@ -220,6 +224,7 @@ circ.cor2 <- function(x, y = NULL) {
 #' @details An auxilliary function to ease the maintenance.
 #' @references Jammalamadaka, S. Rao and SenGupta, A. (2001). Topics in Circular Statistics, Section 8.2, World Scientific Press, Singapore.
 #' @keywords misc
+#' @export
 ################################################################################
 cor2 <- function(x, y = NULL, circ = FALSE) {
   ##############################################################################
@@ -288,6 +293,7 @@ cor2 <- function(x, y = NULL, circ = FALSE) {
 #' @return A vector is returned whose Fourier-transform has no non-negative coeficients.
 #' @seealso \code{\link{Sncf}}
 #' @keywords misc
+#' @export
 ################################################################################
 ff.filter <- function(x) {
   ##############################################################################
