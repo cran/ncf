@@ -1,12 +1,12 @@
 9d88d02d032288568b2cd646e058d419 *CHANGES
-ba65745e45bc4aa632d7e2c6dc14f710 *DESCRIPTION
-9ddd3574144101f0648c02b67672fd5e *NAMESPACE
+c5346e2393da1b8a887b7d476e88aeff *DESCRIPTION
+22313dd7540d1e4fe36746ca6ac05cf1 *NAMESPACE
 a086fe7c69967f1f5c57db0c022722af *R/Sncf.R
 0430430b4b77506c1b938bec1bc32518 *R/Sncf2D.R
 d26efb6e96fa3a4465238fd01586c685 *R/correlog.R
 b6c3cdbeda34baf87fab5c6be239bdb9 *R/data.R
 f547c1540702b6a4d1f5494126f4e177 *R/lisa.R
-7b1ab01d9d4239b10a06da7ccc68dd33 *R/mSynch.R
+62854ef863704875cab7bc80aac71fa3 *R/mSynch.R
 da0da30ca40210e8f794ff168a3853ce *R/mantel-test.R
 904fe538fe9e7e6bf11c154d1e69ce0b *R/spline-correlog.R
 55c3c38a41c3ce95df47920ef379dfd3 *R/spline-correlog2D.R
@@ -39,7 +39,7 @@ baadf8fbcd4d5b389f0f88ca3d8da68e *man/plot.correlog.Rd
 0b665e3e6aa85ad202971067e124ffa2 *man/plot.spline.correlog.Rd
 d7643e5ef1e90402fdd539e6b9aa8c7c *man/print.Sncf.Rd
 5b80a3eac58451064b4927223e3331b6 *man/print.Sncf2D.Rd
-64031eba6782dcb544a2890abf34be23 *man/print.mSynch.Rd
+f792d651ee2d346f8b726a83a86e3857 *man/print.mSynch.Rd
 3a7343836ca698844469b6dea951a8ee *man/print.spline.correlog.Rd
 db6af8b79f6fa53e19fd89fbec93eefb *man/rmvn.spa.Rd
 17ede6b6bef0a551e8e1cd096bf4e41d *man/spatial.plot.Rd
