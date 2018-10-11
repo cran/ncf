@@ -1,12 +1,12 @@
-9d88d02d032288568b2cd646e058d419 *CHANGES
-c5346e2393da1b8a887b7d476e88aeff *DESCRIPTION
+998c512ce33da8c6da271b0aef325ce8 *CHANGES
+c15f2561188adf677816421ae11ccf6b *DESCRIPTION
 22313dd7540d1e4fe36746ca6ac05cf1 *NAMESPACE
 a086fe7c69967f1f5c57db0c022722af *R/Sncf.R
 0430430b4b77506c1b938bec1bc32518 *R/Sncf2D.R
-d26efb6e96fa3a4465238fd01586c685 *R/correlog.R
+328087b3d850a188b1317932151502b7 *R/correlog.R
 b6c3cdbeda34baf87fab5c6be239bdb9 *R/data.R
 f547c1540702b6a4d1f5494126f4e177 *R/lisa.R
-62854ef863704875cab7bc80aac71fa3 *R/mSynch.R
+aee2c7b88068368a638d1d1d6e9e9a40 *R/mSynch.R
 da0da30ca40210e8f794ff168a3853ce *R/mantel-test.R
 904fe538fe9e7e6bf11c154d1e69ce0b *R/spline-correlog.R
 55c3c38a41c3ce95df47920ef379dfd3 *R/spline-correlog2D.R
@@ -19,7 +19,7 @@ bafd326b1a075b46bc87d10d73e7d8b6 *man/cc.offset.Rd
 9e22a3bcf014abec28d8dfb5105c644c *man/circ.cor2.Rd
 44bf37536ed4632e182e44f5360123ec *man/cor2.Rd
 70f6cbbfa7fb446a6e4458ec04a24217 *man/correlog.Rd
-91a827f8fd8c268ae88f387673b37b1f *man/correlog.nc.Rd
+5b717a5326c75f8c8fa80879093ed8ae *man/correlog.nc.Rd
 64c66b6c90191d47680d4c40a492c741 *man/ff.filter.Rd
 f7cf2c15d891aad074c517d5f6a0d304 *man/gather.Rd
 e5502964a6c40092c514dd9a757a93e7 *man/gcdist.Rd
