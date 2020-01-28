@@ -16,7 +16,7 @@ spline.correlog(x, y, z, w = NULL, df = NULL, type = "boot",
 
 \item{z}{vector of length n or matrix of dimension n x p representing p observation at each location.}
 
-\item{w}{an optional second variable with idenitical dimension to z (to estimate cross-correlograms).}
+\item{w}{an optional second variable with identical dimension to z (to estimate cross-correlograms).}
 
 \item{df}{degrees of freedom for the spline. Default is sqrt(n).}
 
@@ -40,7 +40,7 @@ spline.correlog(x, y, z, w = NULL, df = NULL, type = "boot",
 
 \item{na.rm}{If TRUE, NA's will be dealt with through pairwise deletion of missing values.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "spline.correlog" is returned, consisting of the following components: 
@@ -61,7 +61,7 @@ An object of class "spline.correlog" is returned, consisting of the following co
 \details{
 If observations are univariate the spline (cross-)correlogram represents the generalization of the spatial (cross-)correlogram; if observations are multivariate the spline (cross-)correlogram represents the generalization of the Mantel (cross-)correlogram.
 
-  The spline (cross-)correlogram differes from the spatial correlogram (and Mantel correlogram) in that it estimated spatial dependence as a continous functions of distance (rather than binning into distance classes). The spline correlogram differs from the nonparametric (cross-)correlation function in that the zero-correlation reference line in the former corresponds to the regionwide correlation reference line in the latter. The x-intercept in the spline correlogram is the distance at which object are no more similar than that expected by-chance-alone across the region. 
+  The spline (cross-)correlogram differs from the spatial correlogram (and Mantel correlogram) in that it estimated spatial dependence as a continuous functions of distance (rather than binning into distance classes). The spline correlogram differs from the nonparametric (cross-)correlation function in that the zero-correlation reference line in the former corresponds to the region-wide correlation reference line in the latter. The x-intercept in the spline correlogram is the distance at which object are no more similar than that expected by-chance-alone across the region. 
   
   Missing values are allowed -- values are assumed missing at random.
 }

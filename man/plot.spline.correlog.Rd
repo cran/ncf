@@ -2,7 +2,7 @@
 % Please edit documentation in R/spline-correlog.R
 \name{plot.spline.correlog}
 \alias{plot.spline.correlog}
-\title{Plots spline correlograms}
+\title{Plots a spline correlogram}
 \usage{
 \method{plot}{spline.correlog}(x, ylim = c(-1, 1), ...)
 }

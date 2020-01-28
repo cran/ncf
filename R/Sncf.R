@@ -9,14 +9,14 @@
 #' @param resamp the number of resamples for the bootstrap or the null distribution.
 #' @param npoints the number of points at which to save the value for the spline function (and confidence envelope / null distribution).
 #' @param save If TRUE, the whole matrix of output from the resampling is saved (an resamp x npoints dimensional matrix).
-#' @param filter If TRUE, the Fourier filter method of Hall and coworkers is applied to ensure positive semidefiniteness of the estimator. (more work may be needed on this.)
+#' @param filter If TRUE, the Fourier filter method of Hall and coworkers is applied to ensure positive semi-definiteness of the estimator. (more work may be needed on this.)
 #' @param fw If filter is TRUE, it may be useful to truncate the function at some distance w sets the truncation distance. when set to zero no truncation is done.
 #' @param max.it the maximum iteration for the Newton method used to estimate the intercepts.
 #' @param xmax If FALSE, the max observed in the data is used. Otherwise all distances greater than xmax is omitted.
 #' @param na.rm If TRUE, NA's will be dealt with through pairwise deletion of missing values for each pair of time series -- it will dump if any one pair has less than two (temporally) overlapping observations.
 #' @param latlon If TRUE, coordinates are latitude and longitude.
 #' @param circ If TRUE, the observations are assumed to be angular (in radians), and circular correlation is used.
-#' @param quiet If TRUE, the counter is supressed during execution.
+#' @param quiet If TRUE, the counter is suppressed during execution.
 #' @return An object of class "Sncf" is returned, consisting of the following components: 
 #' \item{real}{the list of estimates from the data.}
 #' \item{$cbar}{the regional average correlation.}
@@ -341,7 +341,7 @@ summary.Sncf <- function(object, ...) {
 #' @param w an optional second matrix of dimension n x p for variable 2 (to estimate the spatial cross-correlation function).
 #' @param avg supplies the marginal expectation of the Markov random field; if TRUE, the sample mean (across the markovian field) is used.
 #' @param avg2 optionally supplies the marginal expectation of the Markov random field for optional variable 2; if TRUE, the sample mean is used.
-#' @param corr If TRUE, the covariance function is standardized by the marginal variance (across the markovian field) to return a correlation function (alternatively the covariance function is returned).
+#' @param corr If TRUE, the covariance function is standardized by the marginal variance (across the Markovian field) to return a correlation function (alternatively the covariance function is returned).
 #' @param df degrees of freedom for the spline. Default is sqrt(n).
 #' @param type takes the value "boot" (default) to generate a bootstrap distribution or "perm" to generate a null distribution for the estimator
 #' @param resamp the number of resamples for the bootstrap or the null distribution.
@@ -352,7 +352,7 @@ summary.Sncf <- function(object, ...) {
 #' @param max.it the maximum iteration for the Newton method used to estimate the intercepts.
 #' @param xmax If FALSE, the max observed in the data is used. Otherwise all distances greater than xmax is omitted.
 #' @param jitter If TRUE, jitters the distance matrix, to avoid problems associated with fitting the function to data on regular grids.
-#' @param quiet If TRUE, the counter is supressed during execution.
+#' @param quiet If TRUE, the counter is suppressed during execution.
 #' @return An object of class "Sncf" (or "Sncf.cov") is returned. See \code{\link{Sncf}} for details.
 #' @details If \code{corr = F}, an object of class "Sncf.cov" is returned. Otherwise the class is "Sncf".
 #' 

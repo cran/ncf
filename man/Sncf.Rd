@@ -28,7 +28,7 @@ Sncf(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
 
 \item{save}{If TRUE, the whole matrix of output from the resampling is saved (an resamp x npoints dimensional matrix).}
 
-\item{filter}{If TRUE, the Fourier filter method of Hall and coworkers is applied to ensure positive semidefiniteness of the estimator. (more work may be needed on this.)}
+\item{filter}{If TRUE, the Fourier filter method of Hall and coworkers is applied to ensure positive semi-definiteness of the estimator. (more work may be needed on this.)}
 
 \item{fw}{If filter is TRUE, it may be useful to truncate the function at some distance w sets the truncation distance. when set to zero no truncation is done.}
 
@@ -42,7 +42,7 @@ Sncf(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
 
 \item{circ}{If TRUE, the observations are assumed to be angular (in radians), and circular correlation is used.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "Sncf" is returned, consisting of the following components: 

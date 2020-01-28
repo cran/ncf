@@ -18,7 +18,7 @@ mSynch(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE,
 
 \item{circ}{If TRUE, the observations are assumed to be angular (in radians), and circular correlation is used.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "mSynch" is returned, consisting of a list with two components: 

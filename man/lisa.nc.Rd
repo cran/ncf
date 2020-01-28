@@ -22,7 +22,7 @@ lisa.nc(x, y, z, neigh, na.rm = FALSE, resamp = 1000, latlon = FALSE,
 
 \item{latlon}{If TRUE, coordinates are latitude and longitude.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "lisa" is returned, consisting of the following components:
@@ -33,7 +33,7 @@ An object of class "lisa" is returned, consisting of the following components:
 \item{coord}{a list with the x and y coordinates.}
 }
 \description{
-\code{lisa.nc} is a function to estimate the (noncentred) multivariate local indicators of spatial association. The function requires multiple observations at each location. For single observations at each location use \code{lisa}.
+\code{lisa.nc} is a function to estimate the (non-centred) multivariate local indicators of spatial association. The function requires multiple observations at each location. For single observations at each location use \code{lisa}.
 }
 \details{
 This is the function to estimate the (non-centered) local indicators of spatial 

@@ -18,11 +18,11 @@ mantel.correlog(dmat, zmat, wmat = NULL, increment, resamp = 1000,
 
 \item{resamp}{the number of permutations under the null to assess level of significance.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "correlog" is returned, consisting of the following components: 
-\item{correlation}{the value for the moran (or Mantel) similarity.}
+\item{correlation}{the value for the Moran (or Mantel) similarity.}
 \item{mean.of.class}{the actual average of the distances within each distance class.}
 \item{nlok}{the number of pairs within each distance class.}
 \item{x.intercept}{the interpolate x.intercept of Epperson (1993).}

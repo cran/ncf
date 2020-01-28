@@ -14,7 +14,7 @@ correlog.nc(x, y, z, w = NULL, increment, resamp = 1000,
 
 \item{z}{a matrix of dimension n x p representing p (>1) observation at each location.}
 
-\item{w}{an optional second variable with idenitical dimension to z (to estimate cross-correlograms).}
+\item{w}{an optional second variable with identical dimension to z (to estimate cross-correlograms).}
 
 \item{increment}{increment for the uniformly distributed distance classes.}
 
@@ -24,11 +24,11 @@ correlog.nc(x, y, z, w = NULL, increment, resamp = 1000,
 
 \item{latlon}{If TRUE, coordinates are latitude and longitude.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "correlog" is returned, consisting of the following components: 
-\item{correlation}{the value for the moran (or Mantel) similarity.}
+\item{correlation}{the value for the Moran (or Mantel) similarity.}
 \item{mean.of.class}{the actual average of the distances within each distance class.}
 \item{nlok}{the number of pairs within each distance class.}
 \item{x.intercept}{the interpolate x.intercept of Epperson (1993).}
@@ -36,10 +36,10 @@ An object of class "correlog" is returned, consisting of the following component
 \item{corr0}{If a cross-correlogram is calculated, corr0 gives the empirical within-patch cross-correlation.}
 }
 \description{
-\code{correlog.nc} is the function to estimate the non-centered (cross-)correlogram. The non-centred correlogram provides estimates of the spatial correlation for discrete distance classes. The function requires multiple observations at each location (use \code{\link{correlog}} otherwise).
+\code{correlog.nc} is the function to estimate the non-centered (cross-)correlogram. The non-centered correlogram provides estimates of the spatial correlation for discrete distance classes. The function requires multiple observations at each location (use \code{\link{correlog}} otherwise).
 }
 \details{
-The non-centred correlogram estimates spatial dependence at discrete distance  classes. The method corresponds to the modified correlogram of Koenig & Knops(1998), but augumented to potentially estimate the cross-correlogram). The function requires multiple observations at each location. Missing values is allowed in the multivariate case (pairwise deletion will be used).
+The non-centered correlogram estimates spatial dependence at discrete distance  classes. The method corresponds to the modified correlogram of Koenig & Knops(1998), but augmented to potentially estimate the cross-correlogram). The function requires multiple observations at each location. Missing values is allowed in the multivariate case (pairwise deletion will be used).
   
   Missing values are allowed -- values are assumed missing at random.
 }

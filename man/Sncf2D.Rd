@@ -36,7 +36,7 @@ Sncf2D(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
 
 \item{jitter}{If TRUE, jitters the distance matrix, to avoid problems associated with fitting the function to data on regular grids}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 
 \item{angle}{specifies number of cardinal directions and angles for which to calculate correlation functions. Default are 8 directions between 0 and 180.}
 }
@@ -60,7 +60,7 @@ An object of class "Sncf2D" is returned, consisting of a list of estimates for e
 \code{Sncf2D} is the function to estimate the anisotropic nonparametric correlation function in 8 (or arbitrary) directions (North - Southeast). Correlation functions are calculated for each different bearing. The function requires multiple observations at each location. (use \code{\link{spline.correlog2D}} otherwise).
 }
 \details{
-Correlation functions are calculated on projected distances onto the different bearings so ALL data are used for each direction. The (obsolete?) \code{oldncf2D} used the alternative of slizing up the data like pieces of a pie.
+Correlation functions are calculated on projected distances onto the different bearings so ALL data are used for each direction. The (obsolete?) \code{oldncf2D} used the alternative of slicing up the data like pieces of a pie.
 
   Latitude-longitude coordinates can NOT be used.
   

@@ -1,6 +1,6 @@
 Package: ncf
-Version: 1.2-8
-Date: 2019-03-22
+Version: 1.2-9
+Date: 2020-01-24
 Title: Spatial Covariance Functions
 Authors@R: c(person(c("Ottar", "N."), "Bjornstad", role = c("aut", "cre"),
                      email = "onb1@psu.edu"), 
@@ -10,8 +10,8 @@ Author: Ottar N. Bjornstad [aut, cre],
   Jun Cai [ctb]
 Maintainer: Ottar N. Bjornstad <onb1@psu.edu>
 Depends: R (>= 2.8.0)
-Description: R functions for analyzing spatial (cross-)covariance: the
-        nonparametric (cross-)covariance function, the spline correlogram, the
+Description: Spatial (cross-)covariance and related geostatistical tools: the
+        nonparametric (cross-)covariance function , the spline correlogram, the
         nonparametric phase coherence function, local indicators of spatial 
         association (LISA), (Mantel) correlogram, (Partial) Mantel test.
 License: GPL-3
@@ -19,6 +19,6 @@ URL: http://ento.psu.edu/directory/onb1
 BugReports: https://github.com/objornstad/ncf/issues
 NeedsCompilation: no
 RoxygenNote: 6.1.1
-Packaged: 2019-03-22 20:48:34 UTC; onb1
+Packaged: 2020-01-28 22:27:53 UTC; onb1
 Repository: CRAN
-Date/Publication: 2019-03-22 21:10:02 UTC
+Date/Publication: 2020-01-28 23:10:04 UTC

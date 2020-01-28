@@ -1,3 +1,5 @@
+1.2-9: Spell-checked and devtools / R-hub compliance
+
 1.2-8: Updated plot.lisa file. Fixed problem with xlim argument in plot.spline.correlog and plot.Sncf. Fixed error in treatment of 'quiet' argument
 
 1.2-7: Fixed error in plot.lisa help file.

@@ -22,7 +22,7 @@ Sncf.srf(x, y, z, w = NULL, avg = NULL, avg2 = NULL, corr = TRUE,
 
 \item{avg2}{optionally supplies the marginal expectation of the Markov random field for optional variable 2; if TRUE, the sample mean is used.}
 
-\item{corr}{If TRUE, the covariance function is standardized by the marginal variance (across the markovian field) to return a correlation function (alternatively the covariance function is returned).}
+\item{corr}{If TRUE, the covariance function is standardized by the marginal variance (across the Markovian field) to return a correlation function (alternatively the covariance function is returned).}
 
 \item{df}{degrees of freedom for the spline. Default is sqrt(n).}
 
@@ -44,7 +44,7 @@ Sncf.srf(x, y, z, w = NULL, avg = NULL, avg2 = NULL, corr = TRUE,
 
 \item{jitter}{If TRUE, jitters the distance matrix, to avoid problems associated with fitting the function to data on regular grids.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "Sncf" (or "Sncf.cov") is returned. See \code{\link{Sncf}} for details.

@@ -13,7 +13,7 @@
 #' @param xmax If FALSE, the max observed in the data is used. Otherwise all distances greater than xmax is omitted.
 #' @param na.rm If TRUE, NA's will be dealt with through pairwise deletion of missing values for each pair of time series -- it will dump if any one pair has less than two (temporally) overlapping observations.
 #' @param jitter If TRUE, jitters the distance matrix, to avoid problems associated with fitting the function to data on regular grids
-#' @param quiet If TRUE, the counter is supressed during execution.
+#' @param quiet If TRUE, the counter is suppressed during execution.
 #' @param angle specifies number of cardinal directions and angles for which to calculate correlation functions. Default are 8 directions between 0 and 180.
 #' @return An object of class "Sncf2D" is returned, consisting of a list of estimates for each cardinal direction :
 #' \item{real}{the list of estimates from the data.}
@@ -29,7 +29,7 @@
 #' \item{$boot}{If save=TRUE, the full raw matrices from the resampling is saved.}
 #' \item{angle}{a vector with the cardinal directions.}
 #' \item{max.distance}{the maximum spatial distance.}
-#' @details Correlation functions are calculated on projected distances onto the different bearings so ALL data are used for each direction. The (obsolete?) \code{oldncf2D} used the alternative of slizing up the data like pieces of a pie.
+#' @details Correlation functions are calculated on projected distances onto the different bearings so ALL data are used for each direction. The (obsolete?) \code{oldncf2D} used the alternative of slicing up the data like pieces of a pie.
 #' 
 #'   Latitude-longitude coordinates can NOT be used.
 #'   
@@ -66,7 +66,7 @@ Sncf2D <- function(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
   ##############################################################################
   # Sncf2D is the function to estimate the anisotropic nonparametric covariance function 
   # (using a smoothing spline as an equivalent kernel) in 8 (or arbitrary) directions (North - Southeast) 
-  # through calculateing projected distances onto the different bearings (i.e. all 
+  # through calculating projected distances onto the different bearings (i.e. all 
   # data are used for each direction = 0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5)
   ##############################################################################
   
@@ -127,7 +127,7 @@ Sncf2D <- function(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
     
     moran <- cor2(t(z), circ = FALSE)
   } else {
-    # This generates the moran distances for cross-correlation
+    # This generates the Moran distances for cross-correlation
     # the odd adding of zero is just to ensure that all vectors 
     # are treated as numeric
     n <- dim(z)[1]
@@ -295,7 +295,7 @@ print.Sncf2D <- function(x, ...) {
 
 #' @title Plots anisotropic spatial correlation-functions
 #' @description `plot' method for class "Sncf2D".
-#' @param x an object of class "Sncf2D", ususally, as a result of a call to \code{Sncf2D}.
+#' @param x an object of class "Sncf2D", usually, as a result of a call to \code{Sncf2D}.
 #' @param xmax the maximal distance to be plotted on the x-axis. If set to zero the maximum distance in the data will be used.
 #' @param ylim limits for the y-axis (default: -1, 1).
 #' @param detail If TRUE, a separate plot is made for each direction (including confidence envelopes; see \code{\link{plot.Sncf}} for details. If FALSE, all correlation functions are superimposed on the same plot.
@@ -451,7 +451,7 @@ cc.offset <- function(object, xmax = NULL) {
 
 #' @title Plots the cc.offset summary of the anisotropic spatial correlation-functions
 #' @description `plot' method for class "cc.offset".
-#' @param x an object of class "cc.offset", ususally, as a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.
+#' @param x an object of class "cc.offset", usually, as a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.
 #' @param dmax the maximal distance for radial plot. If NULL, the maximum distance in the data will be used.
 #' @param inches the size of the symbols.If NULL, default is 0.1.
 #' @param \dots other arguments

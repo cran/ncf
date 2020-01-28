@@ -7,7 +7,7 @@
 \method{plot}{cc.offset}(x, dmax = NULL, inches = NULL, ...)
 }
 \arguments{
-\item{x}{an object of class "cc.offset", ususally, as a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.}
+\item{x}{an object of class "cc.offset", usually, as a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.}
 
 \item{dmax}{the maximal distance for radial plot. If NULL, the maximum distance in the data will be used.}
 

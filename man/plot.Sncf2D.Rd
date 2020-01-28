@@ -8,7 +8,7 @@
   ...)
 }
 \arguments{
-\item{x}{an object of class "Sncf2D", ususally, as a result of a call to \code{Sncf2D}.}
+\item{x}{an object of class "Sncf2D", usually, as a result of a call to \code{Sncf2D}.}
 
 \item{xmax}{the maximal distance to be plotted on the x-axis. If set to zero the maximum distance in the data will be used.}
 

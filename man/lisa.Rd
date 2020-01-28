@@ -19,7 +19,7 @@ lisa(x, y, z, neigh, resamp = 1000, latlon = FALSE, quiet = FALSE)
 
 \item{latlon}{If TRUE, coordinates are latitude and longitude.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "lisa" is returned, consisting of the following components: 

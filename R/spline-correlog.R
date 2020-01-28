@@ -3,7 +3,7 @@
 #' @param x vector of length n representing the x coordinates (or longitude; see latlon).
 #' @param y vector of length n representing the y coordinates (or latitude).
 #' @param z vector of length n or matrix of dimension n x p representing p observation at each location.
-#' @param w an optional second variable with idenitical dimension to z (to estimate cross-correlograms).
+#' @param w an optional second variable with identical dimension to z (to estimate cross-correlograms).
 #' @param df degrees of freedom for the spline. Default is sqrt(n).
 #' @param type takes the value "boot" (default) to generate a bootstrap distribution or "perm" to generate a null distribution for the estimator.
 #' @param resamp the number of resamples for the bootstrap or the null distribution.
@@ -15,7 +15,7 @@
 #' @param xmax If FALSE, the max observed in the data is used. Otherwise all distances greater than xmax is omitted.
 #' @param latlon If TRUE, coordinates are latitude and longitude.
 #' @param na.rm If TRUE, NA's will be dealt with through pairwise deletion of missing values.
-#' @param quiet If TRUE, the counter is supressed during execution.
+#' @param quiet If TRUE, the counter is suppressed during execution.
 #' @return An object of class "spline.correlog" is returned, consisting of the following components: 
 #' \item{real}{the list of estimates from the data.}
 #' \item{$x.intercept}{the lowest value at which the function is = 0. If correlation is initially negative, the distance is given as negative.}
@@ -29,7 +29,7 @@
 #' \item{max.distance}{the maximum spatial distance considered.}
 #' @details If observations are univariate the spline (cross-)correlogram represents the generalization of the spatial (cross-)correlogram; if observations are multivariate the spline (cross-)correlogram represents the generalization of the Mantel (cross-)correlogram.
 #' 
-#'   The spline (cross-)correlogram differes from the spatial correlogram (and Mantel correlogram) in that it estimated spatial dependence as a continous functions of distance (rather than binning into distance classes). The spline correlogram differs from the nonparametric (cross-)correlation function in that the zero-correlation reference line in the former corresponds to the regionwide correlation reference line in the latter. The x-intercept in the spline correlogram is the distance at which object are no more similar than that expected by-chance-alone across the region. 
+#'   The spline (cross-)correlogram differs from the spatial correlogram (and Mantel correlogram) in that it estimated spatial dependence as a continuous functions of distance (rather than binning into distance classes). The spline correlogram differs from the nonparametric (cross-)correlation function in that the zero-correlation reference line in the former corresponds to the region-wide correlation reference line in the latter. The x-intercept in the spline correlogram is the distance at which object are no more similar than that expected by-chance-alone across the region. 
 #'   
 #'   Missing values are allowed -- values are assumed missing at random.
 #' @references Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
@@ -243,7 +243,7 @@ spline.correlog <- function(x, y, z, w = NULL, df = NULL, type = "boot", resamp 
   res
 }
 
-#' @title Plots spline correlograms
+#' @title Plots a spline correlogram
 #' @description `plot' method for class "spline.correlog".
 #' @param x an object of class "spline.correlog", usually, as a result of a call to \code{spline.correlog}.
 #' @param ylim limits for the y-axis (default: -1, 1).

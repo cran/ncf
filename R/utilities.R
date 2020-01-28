@@ -288,9 +288,9 @@ cor2 <- function(x, y = NULL, circ = FALSE) {
 }
 
 #' @title Fourier filter for c'fns
-#' @description Fourier filter to ensure positive semi-definite correlation fnctions.  Called by various functions.
+#' @description Fourier filter to ensure positive semi-definite correlation functions.  Called by various functions.
 #' @param x a vector.
-#' @return A vector is returned whose Fourier-transform has no non-negative coeficients.
+#' @return A vector is returned whose Fourier-transform has no non-negative coefficients.
 #' @seealso \code{\link{Sncf}}
 #' @keywords misc
 #' @export

@@ -22,7 +22,7 @@ mantel.test(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL,
 
 \item{latlon}{If TRUE, coordinates are latitude and longitude.}
 
-\item{quiet}{If TRUE, the counter is supressed during execution.}
+\item{quiet}{If TRUE, the counter is suppressed during execution.}
 }
 \value{
 An object of class "Mantel" is returned, consisting of a list with two components:
