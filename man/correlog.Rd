@@ -4,8 +4,17 @@
 \alias{correlog}
 \title{Uni- and multivariate spatial correlograms}
 \usage{
-correlog(x, y, z, w = NULL, increment, resamp = 1000, latlon = FALSE,
-  na.rm = FALSE, quiet = FALSE)
+correlog(
+  x,
+  y,
+  z,
+  w = NULL,
+  increment,
+  resamp = 999,
+  latlon = FALSE,
+  na.rm = FALSE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{x}{vector of length n representing the x coordinates (or longitude; see latlon).}
@@ -77,11 +86,11 @@ fit3 <- correlog(x = x, y = y, z = z, w = w, increment = 2, resamp = 0)
 \dontrun{plot(fit3)}
 }
 \references{
-Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
+Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. <doi:10.1016/S0169-5347(99)01677-8>
 
-  Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
+  Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. <doi:10.1023/A:1009601932481>
   
-  Epperson, B.K. (1993) Recent advances in correlation studies of spatial patterns of genetic variation. Evolutionary Biology, 27, 95-155. \url{https://doi.org/10.1007/978-1-4615-2878-4_4}
+  Epperson, B.K. (1993) Recent advances in correlation studies of spatial patterns of genetic variation. Evolutionary Biology, 27, 95-155. <doi:10.1007/978-1-4615-2878-4_4>
 }
 \seealso{
 \code{\link{plot.correlog}}, \code{\link{spline.correlog}}, \code{\link{correlog.nc}}

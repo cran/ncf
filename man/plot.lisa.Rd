@@ -4,8 +4,7 @@
 \alias{plot.lisa}
 \title{Plots local indicators of spatial association}
 \usage{
-\method{plot}{lisa}(x, neigh.mean = FALSE, add = FALSE, inches = 0.2,
-  ...)
+\method{plot}{lisa}(x, neigh.mean = FALSE, add = FALSE, inches = 0.2, ...)
 }
 \arguments{
 \item{x}{an object of class "lisa", usually, as a result of a call to \code{\link{lisa}}.}

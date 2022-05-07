@@ -37,7 +37,7 @@
 #'   
 #'   I have implemented an optional argument: \code{jitter} if TRUE this jitters the distance matrix, to avoid some problems I've had with spline-smoothing data from regular grid-data.
 #' @note The function to estimate the anisotropic nonparametric (cross-)correlation function in arbitrary directions. In particular it was developed to calculate the lagged cross-correlation function (Bjornstad et al. 2002).
-#' @references Bjornstad, O. N., M. Peltonen, A. M. Liebhold, and W. Baltensweiler. 2002. Waves of larch budmoth outbreaks in the European Alps. Science 298:1020-1023. \url{https://doi.org/10.1126/science.1075182}
+#' @references Bjornstad, O. N., M. Peltonen, A. M. Liebhold, and W. Baltensweiler. 2002. Waves of larch budmoth outbreaks in the European Alps. Science 298:1020-1023. <doi:10.1126/science.1075182>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{summary.Sncf2D}}, \code{\link{plot.Sncf2D}}, \code{\link{cc.offset}} , \code{\link{Sncf}}, \code{\link{spline.correlog2D}}
 #' @examples 
@@ -294,7 +294,7 @@ print.Sncf2D <- function(x, ...) {
 }
 
 #' @title Plots anisotropic spatial correlation-functions
-#' @description `plot' method for class "Sncf2D".
+#' @description plot method for class "Sncf2D".
 #' @param x an object of class "Sncf2D", usually, as a result of a call to \code{Sncf2D}.
 #' @param xmax the maximal distance to be plotted on the x-axis. If set to zero the maximum distance in the data will be used.
 #' @param ylim limits for the y-axis (default: -1, 1).
@@ -343,7 +343,7 @@ plot.Sncf2D <- function(x, xmax = 0, ylim = c(-1, 1), detail = FALSE, ...) {
 }
 
 #' @title Summarizing anisotropic spatial correlation-functions
-#' @description `summary' method for class "Sncf2D".
+#' @description Summary method for class "Sncf2D".
 #' @param object an object of class "Sncf2D", usually, as a result of a call to \code{\link{Sncf2D}}.
 #' @param \dots other arguments
 #' @return A list summarizing the nonparametric covariance function in each cardinal direction results, each with the entires as in \code{\link{summary.Sncf}}.
@@ -398,7 +398,7 @@ summary.Sncf2D <- function(object, ...) {
 }
 
 #' @title Function to calculate the distance at which the cross-correlation peaks for Sncf objects
-#' @description Alternative `summary' method for class "Sncf2D".
+#' @description Alternative summary method for class "Sncf2D".
 #' @param object an object of class "Sncf2D", usually, as a result of a call to \code{Sncf2D} or \code{spline.correlog2D}.
 #' @param xmax the maximum distance to consider (default is no upper limit).
 #' @return An matrix of class "cc.offset" is returned with columns:
@@ -450,12 +450,12 @@ cc.offset <- function(object, xmax = NULL) {
 }
 
 #' @title Plots the cc.offset summary of the anisotropic spatial correlation-functions
-#' @description `plot' method for class "cc.offset".
+#' @description plot method for class "cc.offset".
 #' @param x an object of class "cc.offset", usually, as a result of applying \code{cc.offset} to an object of class \code{Sncf2D}.
 #' @param dmax the maximal distance for radial plot. If NULL, the maximum distance in the data will be used.
 #' @param inches the size of the symbols.If NULL, default is 0.1.
 #' @param \dots other arguments
-#' @return A radial `symbol' plot results. The radius represents the distance to peak correlation (the mode) of the correlation function (in the positive direction). The size of the symbol represents the magnitude of the correlation at the mode for the given cardinal direction.
+#' @return A radial symbol plot results. The radius represents the distance to peak correlation (the mode) of the correlation function (in the positive direction). The size of the symbol represents the magnitude of the correlation at the mode for the given cardinal direction.
 #' @seealso \code{\link{cc.offset}}, \code{\link{Sncf2D}}, \code{\link{plot.Sncf2D}}
 #' @export
 ################################################################################

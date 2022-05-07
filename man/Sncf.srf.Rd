@@ -4,10 +4,26 @@
 \alias{Sncf.srf}
 \title{Nonparametric (Cross-)Covariance Function from stationary random fields}
 \usage{
-Sncf.srf(x, y, z, w = NULL, avg = NULL, avg2 = NULL, corr = TRUE,
-  df = NULL, type = "boot", resamp = 0, npoints = 300,
-  save = FALSE, filter = FALSE, fw = 0, max.it = 25,
-  xmax = FALSE, jitter = FALSE, quiet = FALSE)
+Sncf.srf(
+  x,
+  y,
+  z,
+  w = NULL,
+  avg = NULL,
+  avg2 = NULL,
+  corr = TRUE,
+  df = NULL,
+  type = "boot",
+  resamp = 0,
+  npoints = 300,
+  save = FALSE,
+  filter = FALSE,
+  fw = 0,
+  max.it = 25,
+  xmax = FALSE,
+  jitter = FALSE,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{x}{vector of length n representing the x coordinates (or longitude; see latlon).}
@@ -87,7 +103,7 @@ fit2 <- Sncf.srf(x = x, y = y, z = z, w = w, avg = 0, avg2 = 0, corr = FALSE,
 summary(fit2)
 }
 \references{
-Bjornstad, O. N., and J. Bascompte. (2001) Synchrony and second order spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933. \url{https://doi.org/10.1046/j.0021-8790.2001.00560.x}
+Bjornstad, O. N., and J. Bascompte. (2001) Synchrony and second order spatial correlation in host-parasitoid systems. Journal of Animal Ecology 70:924-933. <doi:10.1046/j.0021-8790.2001.00560.x>
 }
 \seealso{
 \code{\link{Sncf}}, \code{\link{summary.Sncf}}, \code{\link{plot.Sncf}}, \code{\link{plot.Sncf.cov}}

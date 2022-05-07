@@ -5,12 +5,12 @@
 #' @param z vector of length n or matrix of dimension n x p representing p observation at each location.
 #' @param w an optional second variable with identical dimension to z (to estimate cross-correlograms).
 #' @param df degrees of freedom for the spline. Default is sqrt(n).
-#' @param type takes the value "boot" (default) to generate a bootstrap distribution or "perm" to generate a null distribution for the estimator.
+#' @param type takes the value "boot" (default) to generate a bootstrap distribution or "perm" to generate a null distribution 
 #' @param resamp the number of resamples for the bootstrap or the null distribution.
 #' @param npoints the number of points at which to save the value for the spline function (and confidence envelope / null distribution).
-#' @param save If TRUE, the whole matrix of output from the resampling is saved (an resamp x npoints dimensional matrix).
+#' @param save If TRUE, the whole matrix of output from the resampling is saved (a resamp x npoints dimensional matrix).
 #' @param filter If TRUE, the Fourier filter method of Hall and coworkers is applied to ensure positive semidefiniteness of the estimator.
-#' @param fw If filter is TRUE, it may be useful to truncate the function at some distance w sets the truncation distance. When set to zero, no truncation is done.
+#' @param fw If filter is TRUE, it may be useful to truncate the function at some distance fw sets the truncation distance. When set to zero, no truncation is done.
 #' @param max.it the maximum iteration for the Newton method used to estimate the intercepts.
 #' @param xmax If FALSE, the max observed in the data is used. Otherwise all distances greater than xmax is omitted.
 #' @param latlon If TRUE, coordinates are latitude and longitude.
@@ -32,7 +32,7 @@
 #'   The spline (cross-)correlogram differs from the spatial correlogram (and Mantel correlogram) in that it estimated spatial dependence as a continuous functions of distance (rather than binning into distance classes). The spline correlogram differs from the nonparametric (cross-)correlation function in that the zero-correlation reference line in the former corresponds to the region-wide correlation reference line in the latter. The x-intercept in the spline correlogram is the distance at which object are no more similar than that expected by-chance-alone across the region. 
 #'   
 #'   Missing values are allowed -- values are assumed missing at random.
-#' @references Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
+#' @references Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. <doi:10.1023/A:1009601932481>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{summary.spline.correlog}}, \code{\link{plot.spline.correlog}}, \code{\link{Sncf}}, \code{\link{spline.correlog2D}}, \code{\link{correlog}}
 #' @examples 
@@ -183,10 +183,10 @@ spline.correlog <- function(x, y, z, w = NULL, df = NULL, type = "boot", resamp 
         trekkx <- sample(1:n, replace = TRUE)
         trekky <- trekkx
       }
-      #if(type == 2) {
-      #	trekky <- sample(1:n, replace = FALSE)
-      #	trekkx <- 1:n
-      #}
+      if(type == 2) {
+      	trekky <- sample(1:n, replace = FALSE)
+      	trekkx <- 1:n
+      }
       xdistb <- xdist[trekkx, trekkx]
       
       if (is.null(w)) {
@@ -238,7 +238,7 @@ spline.correlog <- function(x, y, z, w = NULL, df = NULL, type = "boot", resamp 
     boot.summary <- NULL
   }
   res <- list(real = real, boot = boot, max.distance = maxdist, 
-              call = deparse(match.call()))
+              call = deparse(match.call()), type=type)
   class(res) <- "spline.correlog"
   res
 }
@@ -271,13 +271,13 @@ plot.spline.correlog <- function(x, ylim = c(-1, 1), ...) {
   }
   lines(x$real$predicted$x, x$real$predicted$y)
   lines(c(0, max(x$real$predicted$x)), c(0, 0))
-}
+  }
 
 #' @title Summarizing spline correlograms
 #' @description `summary' method for class "spline.correlog".
 #' @param object an object of class "spline.correlog", usually, as a result of a call to \code{\link{spline.correlog}}.
 #' @param \dots other arguments
-#' @return A list summarizing spline correlograms is returned. 
+#' @return A list summarizing the spline correlogram is returned. 
 #' \item{estimates}{a vector of benchmark statistics:}
 #' \item{$x}{is the lowest value at which the function is = 0. If correlation is initially negative, the distance calculated appears as a negative measure.}
 #' \item{$e}{is the lowest value at which the function is <= 1/e.}
@@ -301,6 +301,7 @@ summary.spline.correlog <- function(object, ...) {
               probs = c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), na.rm = TRUE)
   xyd <- cbind(xd, ed, yd)
   dimnames(xyd) <- list(c(0, 0.025, 0.25, 0.5, 0.75, 0.975, 1), c("x", "e", "y"))
+  #if(object$type!="boot") xyd <-NULL
   res <- list(call = object$call, estimate = xy, quantiles = xyd)
   res
 }

@@ -16,7 +16,7 @@
 #' \item{z}{the original observations}
 #' \item{coord}{a list with the x and y coordinates.}
 #' @details This is the function to estimate the local indicators of spatial association modified form Anselin (1995). The statistic is the average autocorrelation within a neighborhood.
-#' @references Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115. \url{https://doi.org/10.1111/j.1538-4632.1995.tb00338.x}
+#' @references Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115. <doi:10.1111/j.1538-4632.1995.tb00338.x>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{plot.lisa}} 
 #' @examples 
@@ -28,12 +28,12 @@
 #' z <- rmvn.spa(x = x, y = y, p = 2, method = "gaus")
 #' 
 #' # lisa analysis
-#' fit1 <- lisa(x = x, y = y, z = z, neigh = 3, resamp = 500)
+#' fit1 <- lisa(x = x, y = y, z = z, neigh = 3, resamp = 499)
 #' \dontrun{plot(fit1, neigh.mean=FALSE)}
 #' @keywords spatial
 #' @export
 ################################################################################
-lisa <- function(x, y, z, neigh, resamp = 1000, latlon = FALSE, quiet = FALSE) {
+lisa <- function(x, y, z, neigh, resamp = 999, latlon = FALSE, quiet = FALSE) {
   ##############################################################################
   # lisa is a function to estimate the local indicators of spatial association.
   ##############################################################################
@@ -165,7 +165,7 @@ plot.lisa <- function(x, neigh.mean = FALSE, add = FALSE, inches = 0.2, ...) {
 #' a neighborhood. The function requires multiple observations at each location.
 #' 
 #'   Missing values are allowed -- values are assumed missing at random, and pairwise complete observations will be used.
-#' @references Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115. \url{https://doi.org/10.1111/j.1538-4632.1995.tb00338.x}
+#' @references Anselin, L. 1995. Local indicators of spatial association - LISA. Geographical Analysis 27:93-115. <doi:10.1111/j.1538-4632.1995.tb00338.x>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{lisa}}
 #' @examples 
@@ -185,7 +185,7 @@ plot.lisa <- function(x, neigh.mean = FALSE, add = FALSE, inches = 0.2, ...) {
 #' @keywords spatial
 #' @export
 ################################################################################
-lisa.nc <- function(x, y, z, neigh, na.rm = FALSE, resamp = 1000, latlon = FALSE, 
+lisa.nc <- function(x, y, z, neigh, na.rm = FALSE, resamp = 999, latlon = FALSE, 
                   quiet = FALSE) {
   ##############################################################################
   if (is.null(dim(z))) {

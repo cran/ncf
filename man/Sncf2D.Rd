@@ -4,10 +4,23 @@
 \alias{Sncf2D}
 \title{Anisotropic nonparametric (cross-)correlation function for spatio-temporal data}
 \usage{
-Sncf2D(x, y, z, w = NULL, df = NULL, type = "boot", resamp = 1000,
-  npoints = 300, save = FALSE, max.it = 25, xmax = FALSE,
-  na.rm = FALSE, jitter = FALSE, quiet = FALSE, angle = c(0, 22.5,
-  45, 67.5, 90, 112.5, 135, 157.5))
+Sncf2D(
+  x,
+  y,
+  z,
+  w = NULL,
+  df = NULL,
+  type = "boot",
+  resamp = 1000,
+  npoints = 300,
+  save = FALSE,
+  max.it = 25,
+  xmax = FALSE,
+  na.rm = FALSE,
+  jitter = FALSE,
+  quiet = FALSE,
+  angle = c(0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5)
+)
 }
 \arguments{
 \item{x}{vector of length n representing the x coordinates.}
@@ -89,7 +102,7 @@ summary(fit1)
 cc.offset(fit1)
 }
 \references{
-Bjornstad, O. N., M. Peltonen, A. M. Liebhold, and W. Baltensweiler. 2002. Waves of larch budmoth outbreaks in the European Alps. Science 298:1020-1023. \url{https://doi.org/10.1126/science.1075182}
+Bjornstad, O. N., M. Peltonen, A. M. Liebhold, and W. Baltensweiler. 2002. Waves of larch budmoth outbreaks in the European Alps. Science 298:1020-1023. <doi:10.1126/science.1075182>
 }
 \seealso{
 \code{\link{summary.Sncf2D}}, \code{\link{plot.Sncf2D}}, \code{\link{cc.offset}} , \code{\link{Sncf}}, \code{\link{spline.correlog2D}}

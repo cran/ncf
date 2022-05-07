@@ -4,8 +4,14 @@
 \alias{partial.mantel.test}
 \title{Partial Mantel test}
 \usage{
-partial.mantel.test(M1, M2, M3, resamp = 1000, method = "pearson",
-  quiet = FALSE)
+partial.mantel.test(
+  M1,
+  M2,
+  M3,
+  resamp = 999,
+  method = "pearson",
+  quiet = FALSE
+)
 }
 \arguments{
 \item{M1}{similarity/distance matrix 1}
@@ -42,7 +48,7 @@ M1 <- sqrt(outer(x, x, "-")^2)
 M2 <- sqrt(outer(y, y, "-")^2)
 M3 <- sqrt(outer(z, z, "-")^2)
 
-partial.mantel.test(M1 = M1, M2 = M2, M3 = M3, resamp = 500)
+partial.mantel.test(M1 = M1, M2 = M2, M3 = M3, resamp = 999)
 }
 \references{
 Legendre, P., and L. Legendre. 1998. Numerical Ecology, 2nd edition. Elsevier, Amsterdam

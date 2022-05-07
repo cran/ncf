@@ -4,8 +4,14 @@
 \alias{mantel.correlog}
 \title{Mantel (cross-)correlograms}
 \usage{
-mantel.correlog(dmat, zmat, wmat = NULL, increment, resamp = 1000,
-  quiet = FALSE)
+mantel.correlog(
+  dmat,
+  zmat,
+  wmat = NULL,
+  increment,
+  resamp = 999,
+  quiet = FALSE
+)
 }
 \arguments{
 \item{dmat}{a matrix representing distance.}

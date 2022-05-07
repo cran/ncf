@@ -13,10 +13,10 @@
 #' \item{p}{the randomization-based two-sided p-value.}
 #' @details Typical usages are
 #' \preformatted{
-#' mantel.test(M1, M2, x = NULL, y = NULL, z = NULL, resamp = 1000, 
+#' mantel.test(M1, M2, x = NULL, y = NULL, z = NULL, resamp = 999, 
 #'             latlon = FALSE, quiet = FALSE)
 #' 
-#' mantel.test(x, y, z, M1 = NULL, M2 = NULL, resamp = 1000, latlon = FALSE, 
+#' mantel.test(x, y, z, M1 = NULL, M2 = NULL, resamp = 999, latlon = FALSE, 
 #'             quiet = FALSE)
 #' }
 #' 
@@ -33,12 +33,12 @@
 #'   )
 #' 
 #' # the Mantel test
-#' mantel.test(x = x, y = y, z = z[, 1], resamp = 500)
+#' mantel.test(x = x, y = y, z = z[, 1], resamp = 999)
 #' @keywords spatial
 #' @export
 ################################################################################
 mantel.test <- function(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL, 
-                        resamp = 1000, latlon = FALSE, quiet = FALSE) {
+                        resamp = 999, latlon = FALSE, quiet = FALSE) {
   ##############################################################################
   # mantel.test is a function to calculate the mantel test for two matrices,
   # or for {x, y, z} data.
@@ -140,11 +140,11 @@ mantel.test <- function(M1 = NULL, M2 = NULL, x = NULL, y = NULL, z = NULL,
 #' M2 <- sqrt(outer(y, y, "-")^2)
 #' M3 <- sqrt(outer(z, z, "-")^2)
 #' 
-#' partial.mantel.test(M1 = M1, M2 = M2, M3 = M3, resamp = 500)
+#' partial.mantel.test(M1 = M1, M2 = M2, M3 = M3, resamp = 999)
 #' @keywords spatial
 #' @export
 ################################################################################
-partial.mantel.test <- function(M1, M2, M3, resamp = 1000, method = 'pearson', 
+partial.mantel.test <- function(M1, M2, M3, resamp = 999, method = 'pearson', 
                                 quiet = FALSE) {
   ##############################################################################
   # partial.mantel.tets is a simple function to calculate Mantel and partial mantel tests for three matrices,

@@ -16,10 +16,10 @@
 \item{\dots}{other arguments}
 }
 \value{
-A radial `symbol' plot results. The radius represents the distance to peak correlation (the mode) of the correlation function (in the positive direction). The size of the symbol represents the magnitude of the correlation at the mode for the given cardinal direction.
+A radial symbol plot results. The radius represents the distance to peak correlation (the mode) of the correlation function (in the positive direction). The size of the symbol represents the magnitude of the correlation at the mode for the given cardinal direction.
 }
 \description{
-`plot' method for class "cc.offset".
+plot method for class "cc.offset".
 }
 \seealso{
 \code{\link{cc.offset}}, \code{\link{Sncf2D}}, \code{\link{plot.Sncf2D}}

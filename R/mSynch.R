@@ -12,7 +12,7 @@
 #' @details Missing values are allowed -- values are assumed missing at random. 
 #' 
 #'   The circ argument computes a circular version of the Pearson's product moment correlation (see \code{\link{cor2}}).
-#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
+#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. <doi:10.1016/S0169-5347(99)01677-8>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{print.mSynch}}
 #' @examples 
@@ -31,7 +31,7 @@
 #' @keywords spatial
 #' @export
 ################################################################################
-mSynch <- function(x, y = NULL, resamp = 1000, na.rm = FALSE, circ = FALSE, 
+mSynch <- function(x, y = NULL, resamp = 999, na.rm = FALSE, circ = FALSE, 
                    quiet = FALSE) {
   ##############################################################################
   # mSynch is a function to estimate the mean (cross-)correlation with bootstrap 

@@ -23,11 +23,11 @@
 #'  If the data are univariate, the spatial dependence is measured by Moran's \emph{I}. If it is multivariate, it is measured by the \emph{centred} Mantel statistic. (Use \code{\link{correlog.nc}} if the non-centered multivariate correlogram is desired).
 #'  
 #'  Missing values are allowed -- values are assumed missing at random.
-#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
+#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. <doi:10.1016/S0169-5347(99)01677-8>
 #' 
-#'   Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. \url{https://doi.org/10.1023/A:1009601932481}
+#'   Bjornstad, O.N. & Falck, W. (2001) Nonparametric spatial covariance functions: estimation and testing. Environmental and Ecological Statistics, 8:53-70. <doi:10.1023/A:1009601932481>
 #'   
-#'   Epperson, B.K. (1993) Recent advances in correlation studies of spatial patterns of genetic variation. Evolutionary Biology, 27, 95-155. \url{https://doi.org/10.1007/978-1-4615-2878-4_4}
+#'   Epperson, B.K. (1993) Recent advances in correlation studies of spatial patterns of genetic variation. Evolutionary Biology, 27, 95-155. <doi:10.1007/978-1-4615-2878-4_4>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{plot.correlog}}, \code{\link{spline.correlog}}, \code{\link{correlog.nc}}
 #' @examples 
@@ -60,12 +60,12 @@
 #' \dontrun{plot(fit3)}
 #' @keywords spatial
 #' @export
-#' @importFrom grDevices gray
+#' @importFrom grDevices gray adjustcolor
 #' @importFrom graphics lines par plot points polygon symbols text title
 #' @importFrom stats cor fft lm na.omit predict quantile rnorm sd smooth.spline uniroot var
 #' @importFrom utils flush.console
 ################################################################################
-correlog <- function(x, y, z, w = NULL, increment, resamp = 1000, latlon = FALSE, 
+correlog <- function(x, y, z, w = NULL, increment, resamp = 999, latlon = FALSE, 
                      na.rm = FALSE, quiet = FALSE) {
   ##############################################################################
   # correlog estimates the spatial correlogram (if z is univariate)
@@ -243,9 +243,9 @@ plot.correlog <- function(x, ...) {
 #' @details The non-centered correlogram estimates spatial dependence at discrete distance  classes. The method corresponds to the modified correlogram of Koenig & Knops(1998), but augmented to potentially estimate the cross-correlogram). The function requires multiple observations at each location. Missing values is allowed in the multivariate case (pairwise deletion will be used).
 #'   
 #'   Missing values are allowed -- values are assumed missing at random.
-#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. \url{https://doi.org/10.1016/S0169-5347(99)01677-8}
+#' @references Bjornstad, O.N., Ims, R.A. & Lambin, X. (1999) Spatial population dynamics: Analysing patterns and processes of population synchrony. Trends in Ecology and Evolution, 11, 427-431. <doi:10.1016/S0169-5347(99)01677-8>
 #'   
-#'   Koenig, W.D. & Knops, J.M.H. (1998) Testing for spatial autocorrelation in ecological studies. Ecography, 21, 423-429. \url{https://doi.org/10.1111/j.1600-0587.1998.tb00407.x}
+#'   Koenig, W.D. & Knops, J.M.H. (1998) Testing for spatial autocorrelation in ecological studies. Ecography, 21, 423-429. <doi:10.1111/j.1600-0587.1998.tb00407.x>
 #' @author Ottar N. Bjornstad \email{onb1@psu.edu}
 #' @seealso \code{\link{plot.correlog}}, \code{\link{correlog}}
 #' @examples 
@@ -266,12 +266,12 @@ plot.correlog <- function(x, ...) {
 #'   )
 #' 
 #' # noncentered (Mantel) correlogram 
-#' fit1 <- correlog.nc(x = x, y = y, z = z, increment = 2, resamp = 500)
+#' fit1 <- correlog.nc(x = x, y = y, z = z, increment = 2, resamp = 499)
 #' \dontrun{plot(fit1)}
 #' @keywords spatial
 #' @export
 ################################################################################
-correlog.nc <- function(x, y, z, w = NULL, increment, resamp = 1000, na.rm = FALSE, 
+correlog.nc <- function(x, y, z, w = NULL, increment, resamp = 999, na.rm = FALSE, 
                         latlon = FALSE, quiet = FALSE) {
   ##############################################################################
   # correlog.nc estimates the non-centered correlogram
@@ -447,7 +447,7 @@ correlog.nc <- function(x, y, z, w = NULL, increment, resamp = 1000, na.rm = FAL
 #' @keywords spatial
 #' @export
 ################################################################################
-mantel.correlog <- function(dmat, zmat, wmat = NULL, increment, resamp = 1000, 
+mantel.correlog <- function(dmat, zmat, wmat = NULL, increment, resamp = 999, 
                             quiet = FALSE) {
   if (is.null(wmat)) {
     moran <- zmat[lower.tri(zmat)]
